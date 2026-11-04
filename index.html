@@ -90,6 +90,27 @@ a.foto{font-size:13px;color:#1a5fb4}
 .cam span{font-size:12px;color:var(--mut)}
 .ob{border:1.5px solid #cbd0d8;background:#fff;color:#3c4043;border-radius:9px;padding:8px 10px;font-size:13.5px;font-weight:600}
 .d-c{background:#7b1fa2}
+.otb{width:100%;margin-top:8px;border:2px solid #1a73e8;background:#e8f0fe;color:#0b3d91;border-radius:12px;padding:10px 12px;font-weight:700;font-size:14.5px;text-align:left}
+.otb small{display:block;font-weight:500;color:#3c4a66;font-size:12.5px}
+.otn{width:100%;margin-top:8px;border:2px dashed #d93025;background:#fff4f2;color:#b3261e;border-radius:12px;padding:11px 12px;font-weight:800;font-size:14.5px}
+.otp{margin-top:8px;border-radius:12px;padding:10px 12px;background:#fff8e1;color:#7a5a00;font-size:13.5px;font-weight:600;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.otp button{border:0;background:#1d2433;color:#fff;border-radius:8px;padding:7px 10px;font-weight:700}
+.otreq{background:#fdecea;border:2px solid #d93025;border-radius:12px;padding:12px;margin-bottom:10px}
+.otreq .acts .btn{flex:1}
+.otg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.otg div{background:var(--bg);border-radius:10px;padding:8px 10px}.otg b{display:block;font-size:11.5px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.otdesc{white-space:pre-wrap;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:14.5px}
+.otpaso{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+.otpaso input{width:22px;height:22px;flex:none;margin-top:1px}.otpaso.ok span{text-decoration:line-through;color:var(--mut)}
+.otfot{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.otfot figure{margin:0;position:relative}.otfot img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;background:#eee;cursor:zoom-in}
+.otfot figcaption{font-size:11px;color:var(--mut);line-height:1.2;margin-top:2px}
+.otfot .x{position:absolute;top:4px;right:4px;background:#000a;color:#fff;border:0;border-radius:50%;width:26px;height:26px;font-size:14px}
+.otfot figure.quitar img{opacity:.25}
+.lb{position:fixed;inset:0;background:#000e;z-index:60;display:none;align-items:center;justify-content:center;padding:10px}.lb.on{display:flex}.lb img{max-width:100%;max-height:100%;border-radius:6px}
+.badge2{display:inline-block;background:#ede7f6;color:#5e35b1;border-radius:6px;padding:1px 6px;font-size:11.5px;font-weight:700}
+#cv{width:100%;height:55vh;background:#fff;border:1px solid var(--line);border-radius:10px;touch-action:none}
+.pal{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}.pal button{width:34px;height:34px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px #ccc}.pal button.on{box-shadow:0 0 0 3px #1a73e8}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
 .chip{font-size:12px;border-radius:12px;padding:2px 8px;background:#e8f0fe;color:#1a4fb4}
 .chip.pen{background:#fff4d6;color:#8a6100}
@@ -151,6 +172,40 @@ body.mini .mrow .who{color:var(--mut);width:70px;white-space:nowrap;overflow:hid
   <div><label>Prioridad</label><select id="nPrio"><option>Normal</option><option>Alta</option><option>Urgente</option></select></div></div>
   <div class="row" style="margin-top:14px"><button class="btn" onclick="cerrar('mNew')">Cancelar</button><button class="btn pri" id="nOk" onclick="guardarNueva()">Guardar</button></div>
 </div></div>
+
+<div class="modal" id="mOT"><div class="sheet" id="otV"></div></div>
+<div class="modal" id="mOTE"><div class="sheet">
+  <div class="row" style="align-items:center"><h3 id="oeTit" style="flex:3">Orden de trabajo</h3><button class="btn" style="flex:0" onclick="cerrar('mOTE')">✕</button></div>
+  <div id="oeInfo" class="nota"></div>
+  <div class="row"><div><label>Medidas</label><input id="oeMed" placeholder="Ej. 120 x 60 cm"></div><div><label>Cantidad</label><input id="oeCant" placeholder="Ej. 2 piezas"></div></div>
+  <div class="row"><div><label>Material</label><input id="oeMat" placeholder="Ej. Acrílico 3 mm"></div><div><label>Acabado</label><input id="oeAca" placeholder="Ej. Vinil azul, corte con forma"></div></div>
+  <div class="row"><div><label>Instalación</label><input id="oeIns" placeholder="Ej. Sí, en recepción del cliente"></div><div><label>Entrega</label><input id="oeEnt" placeholder="Ej. Recoge el cliente el jueves"></div></div>
+  <label>Archivo de diseño (link)</label><input id="oeArc" placeholder="https://drive.google.com/...">
+  <label>Descripción / especificaciones</label><textarea id="oeDesc" rows="5" placeholder="Todo lo que el equipo necesita saber: colores, tipografía, cuidados, contacto del cliente…"></textarea>
+  <label>Pasos (uno por renglón; se palomean al avanzar)</label><textarea id="oePasos" rows="4" placeholder="Imprimir en Roland&#10;Laminar&#10;Cortar en Graphtec&#10;Empacar"></textarea>
+  <label>Links de apoyo (uno por renglón)</label><textarea id="oeLinks" rows="2" placeholder="https://..."></textarea>
+  <label>Fotos, gráficos y croquis</label>
+  <div id="oeFotos" class="otfot"></div>
+  <div class="row" style="margin-top:8px"><label class="btn" style="text-align:center;margin:0">📷 Agregar fotos<input type="file" id="oeFile" accept="image/*" multiple style="display:none" onchange="otAgregaFotos(this)"></label><button class="btn" onclick="abrirDibujo()">✏️ Dibujar croquis</button></div>
+  <button class="btn pri" style="margin-top:14px" id="oeOk" onclick="guardarOTui()">Guardar orden de trabajo</button>
+</div></div>
+<div class="modal" id="mDraw"><div class="sheet">
+  <div class="row" style="align-items:center"><h3 style="flex:3">Croquis</h3><button class="btn" style="flex:0" onclick="cerrar('mDraw')">✕</button></div>
+  <div class="pal" id="pal"></div>
+  <canvas id="cv"></canvas>
+  <input id="dwDesc" placeholder="Descripción del croquis (opcional)" style="margin-top:8px">
+  <div class="row" style="margin-top:10px"><button class="btn" onclick="dwDeshacer()">↶ Deshacer</button><button class="btn" onclick="dwBorrar()">Borrar</button><button class="btn pri" onclick="dwListo()">Agregar a la OT</button></div>
+</div></div>
+<div class="modal" id="mSolC"><div class="sheet">
+  <div class="row" style="align-items:center"><h3 style="flex:3">🤖 Que Claude genere la OT</h3><button class="btn" style="flex:0" onclick="cerrar('mSolC')">✕</button></div>
+  <div id="scInfo" class="nota"></div>
+  <label>Indicaciones para Claude</label>
+  <textarea id="scTxt" rows="6" placeholder="Ej. 2 letreros de acrílico 3 mm de 60x40 cm, vinil de corte azul rey con el logo del cliente, perforaciones para separadores, instalar en recepción el viernes. Diseño en el Drive: ..."></textarea>
+  <label>Fotos o bocetos de referencia (opcional)</label><input type="file" id="scFotos" accept="image/*" multiple>
+  <button class="btn pri" style="margin-top:12px" id="scOk" onclick="enviarAClaude()">Enviar a Claude</button>
+  <div class="nota">Claude arma la OT con medidas, materiales, descripción y pasos, normalmente en menos de 1 hora, y te avisa para que la revises.</div>
+</div></div>
+<div class="lb" id="lb" onclick="this.classList.remove('on')"><img id="lbImg" alt=""></div>
 
 <script>
 const MINI = /[?&]v=mini/.test(location.search);
@@ -233,9 +288,17 @@ function salir(){ guarda('fp_p',null); S.a=null; S.u=null; pantallaLogin(); }
 // ---------- Datos ----------
 async function cargar(silencioso){
   const d=await call('datos',S.a);
-  S.u=d.u; S.tareas=d.tareas; S.nombres=d.nombres; S.hoy=d.hoy; S.invit=d.invit||[]; S.chat=d.chat||[];
+  S.u=d.u; S.tareas=d.tareas; S.nombres=d.nombres; S.hoy=d.hoy; S.invit=d.invit||[]; S.chat=d.chat||[]; S.otPend=d.otPend||[];
   if(!S._init){ S._init=true; S.vista = (S.u.admin||MINI) ? 'todas' : 'mias'; }
   pintar();
+  if(!S._deep){ S._deep=true; const q=new URLSearchParams(location.search).get('t'); if(q) setTimeout(()=>abrirDeep(q),300); }
+}
+function abrirDeep(id){
+  const t=S.tareas.find(x=>x.id===id); if(!t) return;
+  if(t.ot) return verOT(id);
+  const sol=(S.otPend||[]).find(x=>x.tarea===id); if(sol) return;
+  if(S.vista!=='todas' && !esMia(t)){ S.vista='todas'; pintar(); }
+  const el=document.getElementById('c-'+id); if(el){ el.scrollIntoView({block:'center'}); el.style.outline='3px solid #1a73e8'; }
 }
 
 // ---------- Pintar ----------
@@ -267,6 +330,11 @@ function pintar(){
   if(S.vista==='todas') h+='<select onchange="S.persona=this.value;pintar()"><option value="">Todos</option>'+S.nombres.map(n=>'<option'+(n===S.persona?' selected':'')+'>'+esc(n)+'</option>').join('')+'</select>';
   h+='<label style="font-size:13px;display:flex;align-items:center;gap:4px;width:auto"><input type="checkbox" style="width:auto" '+(S.ocultar?'checked':'')+' onchange="S.ocultar=this.checked;pintar()">Ocultar terminadas</label>';
   h+='<button class="tab" onclick="refrescar()">↻</button></div><main>';
+  (S.otPend||[]).forEach(v=>{
+    h+='<div class="otreq">🚨 <b>'+esc(v.por)+'</b> pide la <b>orden de trabajo</b> de <b>'+esc(v.cliente)+' · '+esc(v.texto)+'</b> ('+esc(v.tarea)+', responsable '+esc(v.resp)+')'+
+      '<div class="nota" style="color:#7a1f16">¿Quieres que Claude te la genere? Solo dale indicaciones.</div>'+
+      '<div class="acts"><button class="btn pri" style="width:auto" onclick="abrirClaude(\''+v.id+'\',\''+v.tarea+'\')">🤖 Que Claude la genere</button><button class="btn" onclick="editarOT(\''+v.tarea+'\')">✍️ La capturo yo</button></div></div>';
+  });
   (S.invit||[]).forEach(v=>{
     h+='<div class="inv">🤝 <b>'+esc(v.por)+'</b> te invita a colaborar en <b>'+esc(v.cliente)+' · '+esc(v.texto)+'</b> ('+esc(v.tarea)+')'+
       '<div class="nota" style="color:#5b4a00">Motivo: '+esc(v.motivo)+'</div>'+
@@ -290,7 +358,7 @@ function pintar(){
 }
 function tarjeta(t){
   const l=luz(t);
-  let h='<div class="card '+l+(critico(t)?' crit-c':'')+'"><div class="cli"><span class="dot d-'+l+'"></span> '+esc(t.cliente||'Sin cliente')+' · '+esc(t.id)+'</div>'+
+  let h='<div class="card '+l+(critico(t)?' crit-c':'')+'" id="c-'+t.id+'"><div class="cli"><span class="dot d-'+l+'"></span> '+esc(t.cliente||'Sin cliente')+' · '+esc(t.id)+'</div>'+
     '<div class="tar">'+esc(t.tarea)+'</div><div class="meta"><span class="tag">'+esc(t.resp)+'</span><span class="tag">'+fechaTxt(t.fecha)+'</span>'+
     (t.prio==='Urgente'?'<span class="tag urg">URGENTE</span>':t.prio==='Alta'?'<span class="tag alta">Alta</span>':'')+
     (colaboro(t)?'<span class="tag" style="background:#e8f0fe;color:#1a4fb4">Colaboras</span>':'')+'</div>';
@@ -313,11 +381,21 @@ function tarjeta(t){
   h+='<button class="ob" onclick="abrirCom(\''+t.id+'\')">💬'+(nc?' '+nc:'')+'</button>';
   if(S.u.admin) h+='<button class="ob" onclick="editar(\''+t.id+'\')">✎</button>';
   h+='</div>';
+  h+=filaOT(t);
   return h+'</div>';
+}
+function puedeOT(){ return S.u && (S.u.admin || S.u.n==='Loriel'); }
+function filaOT(t){
+  if(/^Generar orden de trabajo de /.test(t.tarea) || t.resp==='Loriel' || /^(Administración|Interno - Administración)$/i.test(t.cliente||'')) return ''; // tareas administrativas no llevan OT
+  if(t.ot){ const ps=t.ot.pasos||[], hechos=ps.filter(p=>p.ok).length, nf=(t.ot.fotos||[]).length;
+    return '<button class="otb" onclick="verOT(\''+t.id+'\')">📋 Orden de trabajo '+esc(t.ot.folio)+(t.ot.origen&&t.ot.origen.indexOf('Claude')>=0?' <span class="badge2">Claude</span>':'')+
+      '<small>'+[t.ot.medidas, t.ot.material, nf?nf+' foto'+(nf>1?'s':''):'', ps.length?hechos+'/'+ps.length+' pasos':''].filter(Boolean).map(esc).join(' · ')+'</small></button>'; }
+  if(t.otSol) return '<div class="otp"><span>⏳ OT solicitada a Loriel ('+esc(t.otSol.f)+')'+(t.otSol.estado==='Claude'?' · Claude la está generando':'')+'</span>'+(puedeOT()?'<button onclick="editarOT(\''+t.id+'\')">Capturar OT</button>':'')+'</div>';
+  return '<button class="otn" onclick="pedirOT(\''+t.id+'\')">⚠ Pendiente de agregar orden de trabajo</button>'+(puedeOT()?'<button class="ob" style="margin-top:6px;width:100%" onclick="editarOT(\''+t.id+'\')">＋ Crear orden de trabajo</button>':'');
 }
 function filaMini(t){
   const l=luz(t);
-  let h='<div class="mrow"><span class="dot d-'+(critico(t)&&l!=='r'?'c':l)+'"></span><span class="who">'+esc(t.resp)+'</span><span class="tx" title="'+esc(t.cliente+' · '+t.tarea)+'"><b>'+esc(t.cliente)+'</b> '+esc(t.tarea)+'</span><span style="color:#6b7280;width:58px">'+fechaTxt(t.fecha)+'</span>';
+  let h='<div class="mrow"><span class="dot d-'+(critico(t)&&l!=='r'?'c':l)+'"></span><span class="who">'+esc(t.resp)+'</span><span class="tx" title="'+esc(t.cliente+' · '+t.tarea)+'"><b>'+esc(t.cliente)+'</b> '+esc(t.tarea)+'</span>'+(t.ot?'<span title="Tiene orden de trabajo" style="cursor:pointer" onclick="verOT(\''+t.id+'\')">📋</span>':(/^Generar orden/.test(t.tarea)||t.resp==='Loriel'?'':'<span title="Sin orden de trabajo" style="color:#d93025">⚠</span>'))+'<span style="color:#6b7280;width:58px">'+fechaTxt(t.fecha)+'</span>';
   if(puede(t)) h+='<select onchange="miniCambio(\''+t.id+'\',this)">'+['Pendiente','En proceso','Detenido','Terminado'].map(e=>'<option'+(e===t.est?' selected':'')+'>'+e+'</option>').join('')+'</select>';
   return h+'</div>';
 }
@@ -402,6 +480,98 @@ async function responderInv(cid,acepta){
   if(!acepta){ resp=prompt('¿Por qué no puedes colaborar?')||''; if(!resp.trim()){ toast('Escribe el motivo para rechazar'); return; } }
   try{ const r=await call('responderInvitacion',S.a,cid,acepta,resp); toast(r.msg); await cargar(); }catch(e){ toast(e.message,5000); }
 }
+// ---------- Órdenes de trabajo ----------
+async function pedirOT(id){
+  const t=S.tareas.find(x=>x.id===id);
+  if(!confirm('¿Avisar a Loriel como URGENTE que falta la orden de trabajo de '+t.cliente+' · '+t.tarea+'?')) return;
+  try{ const r=await call('solicitarOT',S.a,id); toast(r.msg,4000); await cargar(); }catch(e){ toast(e.message,5000); }
+}
+function verOT(id){
+  const t=S.tareas.find(x=>x.id===id), o=t.ot; if(!o) return;
+  const campos=[['Medidas',o.medidas],['Cantidad',o.cantidad],['Material',o.material],['Acabado',o.acabado],['Instalación',o.instalacion],['Entrega',o.entrega]].filter(x=>x[1]);
+  const part=participa(t);
+  let h='<div class="row" style="align-items:center"><h3 style="flex:3">📋 '+esc(o.folio)+(o.origen&&o.origen.indexOf('Claude')>=0?' <span class="badge2">generada por Claude</span>':'')+'</h3><button class="btn" style="flex:0" onclick="cerrar(\'mOT\')">✕</button></div>'+
+    '<div class="cli">'+esc(t.cliente||'')+' · '+esc(t.id)+'</div><div class="tar" style="font-weight:600">'+esc(t.tarea)+'</div>'+
+    '<div class="meta"><span class="tag">'+esc(t.resp)+'</span><span class="tag">Entrega '+fechaTxt(t.fecha)+'</span><span class="tag">'+esc(t.prio)+'</span></div>';
+  if(campos.length) h+='<div class="otg">'+campos.map(c=>'<div><b>'+c[0]+'</b>'+esc(c[1])+'</div>').join('')+'</div>';
+  if(o.desc) h+='<div class="secc">Descripción</div><div class="otdesc">'+esc(o.desc)+'</div>';
+  if(o.archivo) h+='<div class="secc">Archivo de diseño</div><a class="foto" target="_blank" rel="noopener" href="'+esc(o.archivo)+'">'+esc(o.archivo)+'</a>';
+  if((o.pasos||[]).length) h+='<div class="secc">Pasos</div>'+o.pasos.map((p,i)=>'<label class="otpaso'+(p.ok?' ok':'')+'"><input type="checkbox" '+(p.ok?'checked':'')+(part?'':' disabled')+' onchange="marcarPaso(\''+t.id+'\','+i+',this.checked)"><span>'+esc(p.t)+(p.ok&&p.por?' <small style="color:#6b7280">('+esc(p.por)+')</small>':'')+'</span></label>').join('');
+  if((o.fotos||[]).length) h+='<div class="secc">Fotos, gráficos y croquis</div><div class="otfot">'+o.fotos.map(f=>'<figure><img loading="lazy" src="'+esc(f.url)+'" alt="'+esc(f.desc||'')+'" onclick="lightbox(this.src)">'+(f.desc||f.tipo==='croquis'?'<figcaption>'+(f.tipo==='croquis'?'✏️ ':'')+esc(f.desc||'Croquis')+'</figcaption>':'')+'</figure>').join('')+'</div>';
+  if((o.links||[]).length) h+='<div class="secc">Links de apoyo</div>'+o.links.map(l=>'<div><a class="foto" target="_blank" rel="noopener" href="'+esc(l)+'">'+esc(l)+'</a></div>').join('');
+  h+='<div class="nota" style="margin-top:12px">Creada por '+esc(o.por)+' · '+esc(o.creada)+(o.act?' · Última edición: '+esc(o.actpor)+' '+esc(o.act):'')+'</div>';
+  if(puedeOT()) h+='<button class="btn pri" style="margin-top:12px" onclick="cerrar(\'mOT\');editarOT(\''+t.id+'\')">✎ Editar orden de trabajo</button>';
+  document.getElementById('otV').innerHTML=h; abrir('mOT');
+}
+function lightbox(src){ document.getElementById('lbImg').src=src; document.getElementById('lb').classList.add('on'); }
+async function marcarPaso(id,i,ok){
+  try{ await call('pasoOT',S.a,id,i,ok); const t=S.tareas.find(x=>x.id===id); t.ot.pasos[i].ok=ok; t.ot.pasos[i].por=S.u.n; verOT(id); pintar(); }
+  catch(e){ toast(e.message,5000); verOT(id); }
+}
+function editarOT(id){
+  const t=S.tareas.find(x=>x.id===id), o=t.ot||{};
+  S.otEd={id:id, nuevas:[], quitar:{}};
+  document.getElementById('oeTit').textContent=o.folio?'Editar '+o.folio:'Nueva orden de trabajo';
+  document.getElementById('oeInfo').textContent=t.id+' · '+(t.cliente||'')+' · '+t.tarea+' · Responsable: '+t.resp;
+  const set=(k,v)=>document.getElementById(k).value=v||'';
+  set('oeMed',o.medidas); set('oeCant',o.cantidad); set('oeMat',o.material); set('oeAca',o.acabado); set('oeIns',o.instalacion); set('oeEnt',o.entrega); set('oeArc',o.archivo);
+  set('oeDesc',o.desc); set('oePasos',(o.pasos||[]).map(p=>p.t).join('\n')); set('oeLinks',(o.links||[]).join('\n'));
+  pintaFotosOT(); abrir('mOTE');
+}
+function pintaFotosOT(){
+  const t=S.tareas.find(x=>x.id===S.otEd.id), ex=(t.ot&&t.ot.fotos)||[];
+  let h=ex.map((f,i)=>'<figure class="'+(S.otEd.quitar[f.url]?'quitar':'')+'"><img src="'+esc(f.url)+'"><button class="x" onclick="S.otEd.quitar[\''+f.url.replace(/'/g,'')+'\']=!S.otEd.quitar[\''+f.url.replace(/'/g,'')+'\'];pintaFotosOT()">'+(S.otEd.quitar[f.url]?'↺':'✕')+'</button><figcaption>'+esc(f.desc||'')+'</figcaption></figure>').join('');
+  h+=S.otEd.nuevas.map((f,i)=>'<figure><img src="data:image/jpeg;base64,'+f.data+'"><button class="x" onclick="S.otEd.nuevas.splice('+i+',1);pintaFotosOT()">✕</button><figcaption>'+(f.tipo==='croquis'?'✏️ ':'')+'Nueva'+(f.desc?' · '+esc(f.desc):'')+'</figcaption></figure>').join('');
+  document.getElementById('oeFotos').innerHTML=h||'<div class="nota">Sin fotos todavía.</div>';
+}
+async function otAgregaFotos(inp){
+  for(const f of [...inp.files].slice(0,12)){ try{ S.otEd.nuevas.push(Object.assign(await comprimir(f),{tipo:'foto'})); }catch(e){} }
+  inp.value=''; pintaFotosOT();
+}
+async function guardarOTui(){
+  const g=k=>document.getElementById(k).value.trim();
+  const t=S.tareas.find(x=>x.id===S.otEd.id), viejos=((t.ot&&t.ot.pasos)||[]);
+  const pasos=g('oePasos').split('\n').map(x=>x.trim()).filter(Boolean).map(x=>{ const v=viejos.find(p=>p.t===x); return {t:x, ok:!!(v&&v.ok)}; });
+  const ot={medidas:g('oeMed'),cantidad:g('oeCant'),material:g('oeMat'),acabado:g('oeAca'),instalacion:g('oeIns'),entrega:g('oeEnt'),archivo:g('oeArc'),desc:g('oeDesc'),pasos:pasos,links:g('oeLinks').split('\n').map(x=>x.trim()).filter(Boolean)};
+  if(!ot.desc && !ot.medidas && !ot.material && !S.otEd.nuevas.length){ toast('Agrega al menos una descripción, medidas o una foto'); return; }
+  const conservar=((t.ot&&t.ot.fotos)||[]).map(f=>f.url).filter(u=>!S.otEd.quitar[u]);
+  const b=document.getElementById('oeOk'); b.disabled=true; b.textContent='Guardando…';
+  try{ const r=await call('guardarOT',S.a,S.otEd.id,ot,S.otEd.nuevas,conservar); cerrar('mOTE'); toast(r.msg,4000); await cargar(); verOT(S.otEd.id); }
+  catch(e){ toast(e.message,6000); } finally{ b.disabled=false; b.textContent='Guardar orden de trabajo'; }
+}
+// Croquis
+const DW={trazos:[],color:'#111',ancho:4};
+function abrirDibujo(){
+  abrir('mDraw'); const cv=document.getElementById('cv'); const r=cv.getBoundingClientRect(); const k=window.devicePixelRatio||1;
+  cv.width=r.width*k; cv.height=r.height*k; DW.k=k; DW.trazos=[]; document.getElementById('dwDesc').value='';
+  document.getElementById('pal').innerHTML=['#111','#d93025','#1a73e8','#1e8e3e','#f29900'].map(c=>'<button style="background:'+c+'" class="'+(c===DW.color?'on':'')+'" onclick="DW.color=\''+c+'\';abrirDibujo2()"></button>').join('')+
+    '<select onchange="DW.ancho=+this.value" style="width:auto"><option value="2">Fino</option><option value="4" selected>Medio</option><option value="8">Grueso</option></select>';
+  dwPinta();
+  if(!cv._ok){ cv._ok=1; let act=null; const pt=e=>{const b=cv.getBoundingClientRect(); return [(e.clientX-b.left)*DW.k,(e.clientY-b.top)*DW.k];};
+    cv.addEventListener('pointerdown',e=>{ cv.setPointerCapture(e.pointerId); act={c:DW.color,w:DW.ancho*DW.k,p:[pt(e)]}; DW.trazos.push(act); dwPinta(); });
+    cv.addEventListener('pointermove',e=>{ if(act){ act.p.push(pt(e)); dwPinta(); } });
+    ['pointerup','pointercancel','pointerleave'].forEach(n=>cv.addEventListener(n,()=>act=null)); }
+}
+function abrirDibujo2(){ document.querySelectorAll('#pal button').forEach(b=>b.classList.toggle('on', b.style.background && b.getAttribute('onclick').indexOf(DW.color)>=0)); }
+function dwPinta(){ const cv=document.getElementById('cv'), x=cv.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,cv.width,cv.height); x.lineCap='round'; x.lineJoin='round';
+  DW.trazos.forEach(t=>{ x.strokeStyle=t.c; x.lineWidth=t.w; x.beginPath(); t.p.forEach((q,i)=>i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1])); if(t.p.length===1){x.lineTo(t.p[0][0]+.1,t.p[0][1]);} x.stroke(); }); }
+function dwDeshacer(){ DW.trazos.pop(); dwPinta(); }
+function dwBorrar(){ DW.trazos=[]; dwPinta(); }
+function dwListo(){ if(!DW.trazos.length){ toast('Dibuja algo primero'); return; }
+  const data=document.getElementById('cv').toDataURL('image/jpeg',0.85).split(',')[1];
+  S.otEd.nuevas.push({data:data,type:'image/jpeg',tipo:'croquis',desc:document.getElementById('dwDesc').value.trim()||'Croquis'}); cerrar('mDraw'); pintaFotosOT(); }
+// Pedirle la OT a Claude
+function abrirClaude(sid,id){ const t=S.tareas.find(x=>x.id===id)||{}; S.solC=sid;
+  document.getElementById('scInfo').textContent=id+' · '+(t.cliente||'')+' · '+(t.tarea||'')+' · Responsable: '+(t.resp||'');
+  document.getElementById('scTxt').value=''; document.getElementById('scFotos').value=''; abrir('mSolC'); }
+async function enviarAClaude(){
+  const txt=document.getElementById('scTxt').value.trim(), files=[...document.getElementById('scFotos').files].slice(0,8);
+  if(!txt && !files.length){ toast('Escribe las indicaciones para Claude'); return; }
+  const b=document.getElementById('scOk'); b.disabled=true; b.textContent='Enviando…';
+  try{ const fotos=[]; for(const f of files){ fotos.push(await comprimir(f)); }
+    const r=await call('responderSolicitudOT',S.a,S.solC,'claude',txt,fotos); cerrar('mSolC'); toast(r.msg,6000); await cargar(); }
+  catch(e){ toast(e.message,6000); } finally{ b.disabled=false; b.textContent='Enviar a Claude'; }
+}
 // ---------- Grupo ----------
 function kM(m){ return m.d+' '+m.f.slice(6); }
 function nuevos(){ const v=lee('fp_chat')||''; return S.chat.filter(m=>m.u!==S.u.n && kM(m)>v).length; }
@@ -447,7 +617,7 @@ async function guardarNueva(){
   catch(e){ toast(e.message,5000); } finally{ b.disabled=false; }
 }
 setInterval(()=>{ if(S.u && !document.querySelector('.modal.on') && S.vista!=='chat') cargar().catch(()=>{}); }, 60000);
-setInterval(()=>{ if(S.u && S.vista==='chat' && !document.hidden){ const ul=S.chat.length?kM(S.chat[S.chat.length-1])+S.chat.length:''; call('datos',S.a).then(d=>{ S.tareas=d.tareas; S.invit=d.invit||[]; S.chat=d.chat||[]; if((S.chat.length?kM(S.chat[S.chat.length-1])+S.chat.length:'')!==ul) pintar(); }).catch(()=>{}); } }, 15000);
+setInterval(()=>{ if(S.u && S.vista==='chat' && !document.hidden){ const ul=S.chat.length?kM(S.chat[S.chat.length-1])+S.chat.length:''; call('datos',S.a).then(d=>{ S.tareas=d.tareas; S.invit=d.invit||[]; S.otPend=d.otPend||[]; S.chat=d.chat||[]; if((S.chat.length?kM(S.chat[S.chat.length-1])+S.chat.length:'')!==ul) pintar(); }).catch(()=>{}); } }, 15000);
 inicio();
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
