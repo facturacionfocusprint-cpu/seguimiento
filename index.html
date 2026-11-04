@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Focus Print · Seguimiento</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1d2433">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Focus Print">
+<style>
+:root{--ink:#1d2433;--mut:#6b7280;--bg:#f3f4f6;--card:#fff;--line:#e5e7eb;--r:#d93025;--a:#f2a900;--v:#1e8e3e;--ok:#9ca3af;--acc:#d4342a}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:15px}
+header{background:var(--ink);color:#fff;padding:calc(12px + env(safe-area-inset-top)) 14px 12px;position:sticky;top:0;z-index:5}
+header .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+header b{font-size:17px}
+header button{background:transparent;color:#fff;border:1px solid #ffffff55;border-radius:8px;padding:6px 10px;font-size:13px}
+.cont{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.pill{display:flex;align-items:center;gap:6px;background:#ffffff18;border-radius:20px;padding:4px 10px;font-size:13px}
+.dot{width:12px;height:12px;border-radius:50%;flex:none;display:inline-block}
+.d-r{background:var(--r)}.d-a{background:var(--a)}.d-v{background:var(--v)}.d-ok{background:var(--ok)}
+.bar{display:flex;gap:6px;padding:10px 12px;flex-wrap:wrap;align-items:center;background:#fff;border-bottom:1px solid var(--line)}
+.tab{border:1px solid var(--line);background:#fff;border-radius:20px;padding:7px 14px;font-size:14px}
+.tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+select,input,textarea{font:inherit;padding:9px 10px;border:1px solid #cbd0d8;border-radius:8px;background:#fff;width:100%}
+.bar select{width:auto;padding:6px 8px;font-size:14px}
+main{padding:10px 12px 90px;max-width:900px;margin:0 auto}
+.card{background:var(--card);border-radius:12px;padding:12px;margin-bottom:10px;border-left:6px solid var(--ok);box-shadow:0 1px 2px #0000000f}
+.card.r{border-left-color:var(--r)}.card.a{border-left-color:var(--a)}.card.v{border-left-color:var(--v)}
+.card.ok{opacity:.7}
+.cli{font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.3px}
+.tar{margin:3px 0 6px;font-size:16px}
+.meta{display:flex;gap:6px;flex-wrap:wrap;font-size:12.5px;color:var(--mut)}
+.tag{background:var(--bg);border-radius:6px;padding:2px 7px}
+.tag.urg{background:#fde8e6;color:var(--r);font-weight:700}
+.tag.alta{background:#fff4d6;color:#8a6100;font-weight:600}
+.acts{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.btn{border:none;border-radius:9px;padding:10px 12px;font-size:14px;font-weight:600;background:var(--bg);color:var(--ink)}
+.btn.ter{background:var(--v);color:#fff}
+.btn.pri{background:var(--ink);color:#fff;width:100%;padding:13px}
+.btn.det{background:#fde8e6;color:var(--r)}
+.nota{font-size:13px;color:var(--mut);margin-top:6px}
+a.foto{font-size:13px;color:#1a5fb4}
+.empty{text-align:center;color:var(--mut);padding:40px 10px}
+.fab{position:fixed;right:16px;bottom:18px;background:var(--acc);color:#fff;border:none;border-radius:28px;padding:14px 20px;font-size:16px;font-weight:700;box-shadow:0 4px 12px #0003}
+.modal{position:fixed;inset:0;background:#0007;display:none;align-items:flex-end;justify-content:center;z-index:20}
+.modal.on{display:flex}
+.sheet{background:#fff;width:100%;max-width:520px;border-radius:16px 16px 0 0;padding:16px;max-height:92vh;overflow:auto}
+.sheet h3{margin:0 0 10px}
+.sheet label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
+.row{display:flex;gap:8px}.row>*{flex:1}
+#login{max-width:380px;margin:60px auto;padding:20px;background:#fff;border-radius:14px}
+#login h2{margin:0 0 4px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 16px;border-radius:10px;z-index:30;display:none;max-width:90%;text-align:center}
+.thanks{position:fixed;inset:0;background:#1e8e3eee;color:#fff;display:none;align-items:center;justify-content:center;z-index:40;text-align:center;padding:30px;font-size:24px;font-weight:700}
+.prev{max-width:100%;max-height:180px;border-radius:8px;margin-top:8px;display:none}
+.yo{font-size:20px;font-weight:800}
+.grp{margin:18px 0 8px;display:flex;align-items:baseline;justify-content:space-between;border-bottom:3px solid var(--ink);padding-bottom:4px}
+.grp h2{margin:0;font-size:24px;font-weight:800}
+.grp span{font-size:13px;color:var(--mut)}
+.inv{background:#fff8e1;border:2px solid var(--a);border-radius:12px;padding:12px;margin-bottom:10px}
+.inv b{font-size:15px}
+.chat{display:flex;flex-direction:column;gap:6px;padding-bottom:80px}
+.msg{max-width:82%;background:#fff;border-radius:12px 12px 12px 3px;padding:7px 10px;box-shadow:0 1px 1px #0000001a;align-self:flex-start;white-space:pre-wrap;word-wrap:break-word}
+.msg.mio{align-self:flex-end;background:#dcf8c6;border-radius:12px 12px 3px 12px}
+.msg .q{font-size:12.5px;font-weight:700;color:#1a5fb4;margin-bottom:2px}
+.msg .h{font-size:11px;color:var(--mut);text-align:right;margin-top:2px}
+.msg img{max-width:100%;border-radius:8px;margin-top:4px;display:block}
+.dia{align-self:center;background:#e1eaf3;color:#3b4a5c;font-size:12px;border-radius:8px;padding:3px 10px;margin:6px 0}
+.envio{position:fixed;left:0;right:0;bottom:0;background:#f0f0f0;padding:8px;display:flex;gap:6px;align-items:flex-end;z-index:6;border-top:1px solid var(--line)}
+.envio textarea{flex:1;border-radius:20px;padding:10px 14px;resize:none;max-height:120px}
+.envio button{border:none;border-radius:50%;width:44px;height:44px;font-size:19px;flex:none;background:var(--v);color:#fff}
+.envio label{width:44px;height:44px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;flex:none;border:1px solid var(--line)}
+.badge{background:var(--r);color:#fff;border-radius:10px;padding:0 6px;font-size:12px;margin-left:4px}
+.est{display:flex;gap:8px;align-items:stretch;margin-top:10px}
+.eb{flex:1;border:none;border-radius:12px;padding:12px 10px;color:#fff;text-align:left;font-weight:800;font-size:18px;letter-spacing:.4px;line-height:1.1}
+.eb small{display:block;font-weight:600;font-size:12.5px;letter-spacing:0;opacity:.92;margin-top:3px}
+.eb.pv{background:#3c4043}.eb.pa{background:#f29900;color:#1d2433}.eb.pr{background:#d93025}
+.eb.pro{background:#1a73e8}.eb.det{background:#8d4e00}.eb.ter{background:#1e8e3e;opacity:.85}
+.crit{flex:none;width:96px;border-radius:12px;background:#7b1fa2;color:#fff;font-weight:800;font-size:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px;animation:lat 1.6s ease-in-out infinite}
+.crit b{font-size:22px;line-height:1}
+@keyframes lat{50%{box-shadow:0 0 0 5px #7b1fa255}}
+.card.crit-c{border-left-color:#7b1fa2;background:#faf5fc}
+.cam{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.cam span{font-size:12px;color:var(--mut)}
+.ob{border:1.5px solid #cbd0d8;background:#fff;color:#3c4043;border-radius:9px;padding:8px 10px;font-size:13.5px;font-weight:600}
+.d-c{background:#7b1fa2}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.chip{font-size:12px;border-radius:12px;padding:2px 8px;background:#e8f0fe;color:#1a4fb4}
+.chip.pen{background:#fff4d6;color:#8a6100}
+.com{border-bottom:1px solid var(--line);padding:8px 0;font-size:14px}
+.com .q{font-size:12px;color:var(--mut)}
+.secc{font-weight:700;margin:16px 0 4px;font-size:14px}
+/* vista mini (PC de Loriel) */
+body.mini{font-size:13px}
+body.mini header{padding:6px 10px}
+body.mini .cont{margin-top:4px}
+body.mini main{padding:6px}
+body.mini .mrow{display:flex;align-items:center;gap:6px;background:#fff;border-bottom:1px solid var(--line);padding:5px 6px}
+body.mini .mrow .tx{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.mini .mrow select{width:108px;padding:3px;font-size:12px}
+body.mini .mrow .who{color:var(--mut);width:70px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+<div class="thanks" id="thanks"></div>
+
+<div class="modal" id="mEst"><div class="sheet">
+  <h3 id="eTit">Cambiar estatus</h3>
+  <div id="eInfo" class="nota"></div>
+  <label>Estatus</label>
+  <select id="eEst"><option>Pendiente</option><option>En proceso</option><option>Detenido</option><option>Terminado</option></select>
+  <label id="eFotoLbl">Foto del trabajo</label>
+  <input type="file" id="eFoto" accept="image/*" capture="environment">
+  <img id="ePrev" class="prev" alt="">
+  <label>Nota (opcional)</label>
+  <textarea id="eNota" rows="2" placeholder="Ej. falta material, se entregó a Fermín..."></textarea>
+  <div class="row" style="margin-top:14px"><button class="btn" onclick="cerrar('mEst')">Cancelar</button><button class="btn pri" id="eOk" onclick="guardarEst()">Guardar</button></div>
+</div></div>
+
+<div class="modal" id="mCom"><div class="sheet">
+  <div class="row" style="align-items:center"><h3 id="cTit" style="flex:3">Comentarios</h3><button class="btn" style="flex:0" onclick="cerrar('mCom')">✕</button></div>
+  <div id="cInfo" class="nota"></div>
+  <div id="cColab" class="chips"></div>
+  <div id="cLista" style="margin-top:8px"></div>
+  <div id="cForm">
+    <div class="secc">Agregar comentario</div>
+    <textarea id="cTxt" rows="3" placeholder="Ej. Falta comprar vinil negro; el cliente pidió cambiar la medida..."></textarea>
+    <input type="file" id="cFoto" accept="image/*" capture="environment" style="margin-top:6px">
+    <button class="btn pri" style="margin-top:8px" id="cOk" onclick="enviarCom()">Enviar comentario</button>
+    <div class="secc">Invitar a alguien a colaborar</div>
+    <select id="iPer"></select>
+    <textarea id="iMot" rows="2" style="margin-top:6px" placeholder="¿Por qué tiene que colaborar? Ej. hay que comprar 2 rollos de vinil"></textarea>
+    <button class="btn" style="margin-top:8px;width:100%" id="iOk" onclick="invitarCol()">Enviar invitación</button>
+  </div>
+</div></div>
+
+<div class="modal" id="mNew"><div class="sheet">
+  <h3 id="nTit">Nueva tarea</h3>
+  <label>Cliente / proyecto</label><input id="nCli" placeholder="Ej. MAJA">
+  <label>Tarea</label><textarea id="nTar" rows="2" placeholder="Qué hay que hacer, medidas, cantidad"></textarea>
+  <label>Responsable</label><select id="nResp"></select>
+  <div class="row"><div><label>Fecha límite</label><input type="date" id="nFec"></div>
+  <div><label>Prioridad</label><select id="nPrio"><option>Normal</option><option>Alta</option><option>Urgente</option></select></div></div>
+  <div class="row" style="margin-top:14px"><button class="btn" onclick="cerrar('mNew')">Cancelar</button><button class="btn pri" id="nOk" onclick="guardarNueva()">Guardar</button></div>
+</div></div>
+
+<script>
+const MINI = /[?&]v=mini/.test(location.search);
+const API_URL = 'https://script.google.com/macros/s/AKfycbytmpU5C5bGbHQRuO7aXGCdk6nG8U2NeYF5mAk6TZPJiRcV6VFdv_kL0EAB4p9qLPLF/exec';
+const EN_GOOGLE = typeof google!=='undefined' && google.script && google.script.run;
+let S = {u:null, a:null, tareas:[], chat:[], invit:[], nombres:[], hoy:'', vista:'mias', persona:'', ocultar:true, edit:null, nuevaId:null};
+
+function call(fn){ const args=[].slice.call(arguments,1);
+  if(EN_GOOGLE) return new Promise((res,rej)=>google.script.run.withSuccessHandler(res).withFailureHandler(e=>rej(e))[fn].apply(null,args));
+  return fetch(API_URL,{method:'POST',body:JSON.stringify({fn:fn,args:args}),credentials:'omit',redirect:'follow'})
+    .then(r=>r.json()).catch(()=>{ throw new Error('Sin conexión. Revisa tu internet e intenta de nuevo.'); })
+    .then(j=>{ if(!j.ok) throw new Error(j.error); return j.r; }); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function toast(m,ms){ const t=document.getElementById('toast'); t.textContent=m; t.style.display='block'; clearTimeout(t._h); t._h=setTimeout(()=>t.style.display='none',ms||3000); }
+function guarda(k,v){ try{ v==null?localStorage.removeItem(k):localStorage.setItem(k,v);}catch(e){} }
+function lee(k){ try{ return localStorage.getItem(k);}catch(e){ return null; } }
+function abrir(id){ document.getElementById(id).classList.add('on'); }
+function cerrar(id){ document.getElementById(id).classList.remove('on'); }
+
+function luz(t){
+  if(t.est==='Terminado') return 'ok';
+  if(t.fecha<S.hoy || t.prio==='Urgente' || t.est==='Detenido') return 'r';
+  if(t.fecha===S.hoy) return 'a';
+  return 'v';
+}
+const ORD={r:0,a:1,v:2,ok:3};
+function manana(){ const d=new Date(S.hoy+'T12:00:00'); d.setDate(d.getDate()+1); return d.toISOString().slice(0,10); }
+// Crítico (morado): se acerca el momento. Vence hoy, o vence mañana y es Alta/Urgente.
+function critico(t){ return t.est!=='Terminado' && t.est!=='Detenido' && t.fecha>=S.hoy && (t.fecha===S.hoy || (t.fecha===manana() && t.prio!=='Normal')); }
+function botonEst(t){
+  const l=luz(t);
+  if(t.est==='Terminado') return '<div class="eb ter">✓ TERMINADO<small>'+esc(t.act||'')+'</small></div>';
+  if(t.est==='Detenido') return '<div class="eb det">⏸ DETENIDO<small>'+(t.fecha<S.hoy?'Vencida · ':'')+'Entrega '+fechaTxt(t.fecha).replace(' (vencida)','')+'</small></div>';
+  const sub = t.fecha<S.hoy ? 'VENCIDA desde '+fechaTxt(t.fecha).replace(' (vencida)','') : (t.fecha===S.hoy ? 'Se entrega HOY' : 'Entrega '+fechaTxt(t.fecha));
+  if(t.est==='En proceso') return '<div class="eb pro">▶ EN PROCESO<small>'+sub+'</small></div>';
+  const c = t.fecha<S.hoy||t.prio==='Urgente' ? 'pr' : (t.fecha===S.hoy ? 'pa' : 'pv');
+  return '<div class="eb '+c+'">● PENDIENTE<small>'+sub+(t.prio==='Urgente'?' · URGENTE':'')+'</small></div>';
+}
+function fechaTxt(f){
+  if(!f) return '';
+  if(f===S.hoy) return 'Hoy';
+  const d=new Date(S.hoy+'T12:00:00'); d.setDate(d.getDate()+1);
+  const man=d.toISOString().slice(0,10);
+  if(f===man) return 'Mañana';
+  const p=f.split('-'); const vencida=f<S.hoy?' (vencida)':'';
+  return p[2]+'/'+p[1]+vencida;
+}
+function puede(t){ return S.u && (S.u.admin || t.resp===S.u.n); }
+function colaboro(t){ return (t.colab||[]).some(c=>c.inv===S.u.n && c.est==='Aceptada'); }
+function esMia(t){ return t.resp===S.u.n || colaboro(t); }
+function participa(t){ return S.u && (S.u.admin || esMia(t)); }
+
+// ---------- Login ----------
+async function inicio(){
+  if(MINI) document.body.classList.add('mini');
+  const n=lee('fp_n'), p=lee('fp_p');
+  if(n && p){ S.a={n:n,p:p}; try{ await cargar(); return; }catch(e){ guarda('fp_p',null); } }
+  pantallaLogin();
+}
+async function pantallaLogin(err){
+  const app=document.getElementById('app');
+  app.innerHTML='<div id="login"><h2>Focus Print</h2><div class="nota">Seguimiento de tareas</div>'+
+    '<label style="display:block;margin:16px 0 4px;color:#6b7280;font-size:13px">¿Quién eres?</label><select id="lN"><option>Cargando…</option></select>'+
+    '<label style="display:block;margin:12px 0 4px;color:#6b7280;font-size:13px">PIN</label><input id="lP" type="password" inputmode="numeric" maxlength="6" placeholder="4 dígitos">'+
+    '<div id="lE" style="color:#d93025;margin-top:8px;font-size:14px">'+(err?esc(err):'')+'</div>'+
+    '<button class="btn pri" style="margin-top:14px" onclick="entrar()">Entrar</button></div>';
+  try{ const ns=await call('nombres'); document.getElementById('lN').innerHTML=ns.map(x=>'<option'+(x===lee('fp_n')?' selected':'')+'>'+esc(x)+'</option>').join(''); }
+  catch(e){ document.getElementById('lE').textContent='No se pudo cargar la lista: '+e.message; }
+  document.getElementById('lP').addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); });
+}
+async function entrar(){
+  const n=document.getElementById('lN').value, p=document.getElementById('lP').value.trim();
+  if(!p){ document.getElementById('lE').textContent='Escribe tu PIN'; return; }
+  S.a={n:n,p:p};
+  try{ await cargar(); guarda('fp_n',n); guarda('fp_p',p); }
+  catch(e){ document.getElementById('lE').textContent=e.message; }
+}
+function salir(){ guarda('fp_p',null); S.a=null; S.u=null; pantallaLogin(); }
+
+// ---------- Datos ----------
+async function cargar(silencioso){
+  const d=await call('datos',S.a);
+  S.u=d.u; S.tareas=d.tareas; S.nombres=d.nombres; S.hoy=d.hoy; S.invit=d.invit||[]; S.chat=d.chat||[];
+  if(!S._init){ S._init=true; S.vista = (S.u.admin||MINI) ? 'todas' : 'mias'; }
+  pintar();
+}
+
+// ---------- Pintar ----------
+function filtradas(){
+  let ts=S.tareas.slice();
+  if(S.vista==='mias') ts=ts.filter(t=>esMia(t));
+  if(S.vista==='todas' && S.persona) ts=ts.filter(t=>t.resp===S.persona);
+  if(S.ocultar) ts=ts.filter(t=>t.est!=='Terminado' || t.act.indexOf(S.hoy.slice(8,10)+'/'+S.hoy.slice(5,7))===0);
+  ts.sort((x,y)=>ORD[luz(x)]-ORD[luz(y)] || (critico(y)-critico(x)) || (x.fecha<y.fecha?-1:x.fecha>y.fecha?1:0));
+  return ts;
+}
+function cuenta(ts){ const c={r:0,a:0,v:0,ok:0}; ts.forEach(t=>c[luz(t)]++); return c; }
+
+function pintar(){
+  const app=document.getElementById('app');
+  const base = S.vista==='mias' ? S.tareas.filter(t=>esMia(t)) : (S.persona? S.tareas.filter(t=>t.resp===S.persona):S.tareas);
+  const c=cuenta(base);
+  const total=base.length, hechas=c.ok, pct= total? Math.round(100*hechas/total):0;
+  let h='<header><div class="top"><b>'+(MINI?'Pendientes':'Focus Print')+'</b><span><span class="yo">'+esc(S.u.n)+'</span> <button onclick="salir()">Salir</button></span></div>'+
+    '<div class="cont"><span class="pill"><span class="dot d-r"></span>'+c.r+' rojo</span><span class="pill"><span class="dot d-a"></span>'+c.a+' hoy</span>'+
+    '<span class="pill"><span class="dot d-c"></span>'+base.filter(critico).length+' crítico</span><span class="pill"><span class="dot d-v"></span>'+c.v+' a tiempo</span><span class="pill"><span class="dot d-ok"></span>'+hechas+'/'+total+' · '+pct+'%</span></div></header>';
+  h+='<div class="bar">';
+  if(!MINI) h+='<button class="tab'+(S.vista==='mias'?' on':'')+'" onclick="S.vista=\'mias\';pintar()">Mis tareas</button><button class="tab'+(S.vista==='todas'?' on':'')+'" onclick="S.vista=\'todas\';pintar()">Todo el equipo</button><button class="tab'+(S.vista==='chat'?' on':'')+'" onclick="S.vista=\'chat\';pintar()">💬 Grupo'+(nuevos()?'<span class="badge">'+nuevos()+'</span>':'')+'</button>';
+  if(S.vista==='chat'){ h+='<button class="tab" onclick="refrescar()">↻</button></div><main>'+pintaChat()+'</main>'+
+    '<div class="envio"><label>📷<input type="file" id="gFoto" accept="image/*" style="display:none" onchange="enviarChat()"></label>'+
+    '<textarea id="gTxt" rows="1" placeholder="Escribe un mensaje para todo el equipo" oninput="S.borr=this.value"></textarea><button id="gOk" onclick="enviarChat()">➤</button></div>';
+    app.innerHTML=h; const ta=document.getElementById('gTxt'); ta.value=S.borr||'';
+    marcaVistos(); window.scrollTo(0,document.body.scrollHeight); return; }
+  if(S.vista==='todas') h+='<select onchange="S.persona=this.value;pintar()"><option value="">Todos</option>'+S.nombres.map(n=>'<option'+(n===S.persona?' selected':'')+'>'+esc(n)+'</option>').join('')+'</select>';
+  h+='<label style="font-size:13px;display:flex;align-items:center;gap:4px;width:auto"><input type="checkbox" style="width:auto" '+(S.ocultar?'checked':'')+' onchange="S.ocultar=this.checked;pintar()">Ocultar terminadas</label>';
+  h+='<button class="tab" onclick="refrescar()">↻</button></div><main>';
+  (S.invit||[]).forEach(v=>{
+    h+='<div class="inv">🤝 <b>'+esc(v.por)+'</b> te invita a colaborar en <b>'+esc(v.cliente)+' · '+esc(v.texto)+'</b> ('+esc(v.tarea)+')'+
+      '<div class="nota" style="color:#5b4a00">Motivo: '+esc(v.motivo)+'</div>'+
+      '<div class="acts"><button class="btn ter" onclick="responderInv(\''+v.id+'\',true)">✓ Acepto</button><button class="btn det" onclick="responderInv(\''+v.id+'\',false)">No puedo</button></div></div>';
+  });
+  const ts=filtradas();
+  if(!ts.length) h+='<div class="empty">'+(S.vista==='mias'?'No tienes tareas pendientes. ¡Bien!':'No hay tareas con este filtro.')+'</div>';
+  if(S.vista==='todas' && !MINI){
+    const orden=S.nombres.slice(); ts.forEach(t=>{ if(orden.indexOf(t.resp)<0) orden.push(t.resp); });
+    orden.forEach(n=>{ const g=ts.filter(t=>t.resp===n); if(!g.length) return;
+      const c2=cuenta(g);
+      h+='<div class="grp"><h2>'+esc(n)+'</h2><span>'+(c2.r?'<span class="dot d-r"></span> '+c2.r+' en rojo · ':'')+(g.filter(critico).length?'<span class="dot d-c"></span> '+g.filter(critico).length+' crítico · ':'')+g.length+' tareas</span></div>';
+      g.forEach(t=>{ h+=tarjeta(t); });
+    });
+  } else {
+    ts.forEach(t=>{ h+= MINI ? filaMini(t) : tarjeta(t); });
+  }
+  h+='</main>';
+  if(S.u.admin && !MINI) h+='<button class="fab" onclick="nueva()">+ Tarea</button>';
+  app.innerHTML=h;
+}
+function tarjeta(t){
+  const l=luz(t);
+  let h='<div class="card '+l+(critico(t)?' crit-c':'')+'"><div class="cli"><span class="dot d-'+l+'"></span> '+esc(t.cliente||'Sin cliente')+' · '+esc(t.id)+'</div>'+
+    '<div class="tar">'+esc(t.tarea)+'</div><div class="meta"><span class="tag">'+esc(t.resp)+'</span><span class="tag">'+fechaTxt(t.fecha)+'</span>'+
+    (t.prio==='Urgente'?'<span class="tag urg">URGENTE</span>':t.prio==='Alta'?'<span class="tag alta">Alta</span>':'')+
+    (colaboro(t)?'<span class="tag" style="background:#e8f0fe;color:#1a4fb4">Colaboras</span>':'')+'</div>';
+  if((t.colab||[]).length) h+='<div class="chips">'+t.colab.map(c=>'<span class="chip'+(c.est==='Pendiente'?' pen':'')+'" title="'+esc(c.motivo)+'">'+(c.est==='Pendiente'?'⏳ ':'🤝 ')+esc(c.inv)+'</span>').join('')+'</div>';
+  if(t.nota) h+='<div class="nota">📝 '+esc(t.nota)+'</div>';
+  const nc=(t.coms||[]).length;
+  if(nc){ const ul=t.coms[nc-1]; h+='<div class="nota">💬 <b>'+esc(ul.u)+':</b> '+esc(ul.txt.length>90?ul.txt.slice(0,90)+'…':ul.txt)+'</div>'; }
+  if(t.act) h+='<div class="nota">Último cambio: '+esc(t.actpor)+' · '+esc(t.act)+(t.foto?' · <a class="foto" target="_blank" href="'+esc(t.foto)+'">ver foto</a>':'')+'</div>';
+  h+='<div class="est">'+botonEst(t)+(critico(t)?'<div class="crit"><b>⚠</b>CRÍTICO</div>':'')+'</div>';
+  h+='<div class="cam">';
+  if(puede(t)){
+    h+='<span>Cambiar a:</span>';
+    if(t.est!=='Pendiente' && t.est!=='Terminado') h+='<button class="ob" onclick="rapido(\''+t.id+'\',\'Pendiente\')">● Pendiente</button>';
+    if(t.est!=='En proceso' && t.est!=='Terminado') h+='<button class="ob" onclick="rapido(\''+t.id+'\',\'En proceso\')">▶ En proceso</button>';
+    if(t.est!=='Detenido' && t.est!=='Terminado') h+='<button class="ob" onclick="abrirEst(\''+t.id+'\',\'Detenido\')">⏸ Detenido</button>';
+    if(t.est!=='Terminado') h+='<button class="ob" onclick="abrirEst(\''+t.id+'\',\'Terminado\')">✓ Terminado</button>';
+    else h+='<button class="ob" onclick="abrirEst(\''+t.id+'\',\'En proceso\')">↩ Reabrir</button>';
+    h+='<button class="ob" onclick="abrirEst(\''+t.id+'\')">📷 Avance</button>';
+  }
+  h+='<button class="ob" onclick="abrirCom(\''+t.id+'\')">💬'+(nc?' '+nc:'')+'</button>';
+  if(S.u.admin) h+='<button class="ob" onclick="editar(\''+t.id+'\')">✎</button>';
+  h+='</div>';
+  return h+'</div>';
+}
+function filaMini(t){
+  const l=luz(t);
+  let h='<div class="mrow"><span class="dot d-'+(critico(t)&&l!=='r'?'c':l)+'"></span><span class="who">'+esc(t.resp)+'</span><span class="tx" title="'+esc(t.cliente+' · '+t.tarea)+'"><b>'+esc(t.cliente)+'</b> '+esc(t.tarea)+'</span><span style="color:#6b7280;width:58px">'+fechaTxt(t.fecha)+'</span>';
+  if(puede(t)) h+='<select onchange="miniCambio(\''+t.id+'\',this)">'+['Pendiente','En proceso','Detenido','Terminado'].map(e=>'<option'+(e===t.est?' selected':'')+'>'+e+'</option>').join('')+'</select>';
+  return h+'</div>';
+}
+
+// ---------- Acciones ----------
+async function refrescar(){ try{ await cargar(); toast('Actualizado'); }catch(e){ toast(e.message); } }
+async function rapido(id,est){
+  try{ const r=await call('cambiarEstatus',S.a,id,est,'',null); toast(r.msg||'Listo'); await cargar(); }catch(e){ toast(e.message,5000); }
+}
+async function miniCambio(id,sel){
+  const est=sel.value; let nota='';
+  if(est==='Terminado'){ nota=prompt('Sin foto: escribe una nota para cerrarla (ej. "revisado por Loriel")')||''; if(!nota){ await cargar(); return; } }
+  try{ const r=await call('cambiarEstatus',S.a,id,est,nota,null); if(r.gracias) gracias(r.gracias); else toast(r.msg); await cargar(); }catch(e){ toast(e.message,5000); await cargar(); }
+}
+function abrirEst(id,est){
+  const t=S.tareas.find(x=>x.id===id); S.edit=id;
+  document.getElementById('eTit').textContent = est==='Terminado' ? '¿Terminaste esta tarea?' : (est ? 'Marcar como '+est.toLowerCase() : 'Subir avance');
+  document.getElementById('eInfo').textContent = t.cliente+' · '+t.tarea;
+  document.getElementById('eEst').value = est || t.est;
+  document.getElementById('eNota').value='';
+  const f=document.getElementById('eFoto'); f.value=''; document.getElementById('ePrev').style.display='none';
+  document.getElementById('eFotoLbl').textContent = (est==='Terminado') ? 'Foto del trabajo terminado (obligatoria)' : 'Foto del trabajo (opcional)';
+  abrir('mEst');
+}
+document.addEventListener('change',e=>{
+  if(e.target.id==='eFoto' && e.target.files[0]){ const p=document.getElementById('ePrev'); p.src=URL.createObjectURL(e.target.files[0]); p.style.display='block'; }
+});
+function comprimir(file){
+  return new Promise((res,rej)=>{
+    const img=new Image(); const url=URL.createObjectURL(file);
+    img.onload=()=>{ const m=1600; const k=Math.min(1,m/Math.max(img.width,img.height));
+      const c=document.createElement('canvas'); c.width=Math.round(img.width*k); c.height=Math.round(img.height*k);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(url);
+      res({data:c.toDataURL('image/jpeg',0.72).split(',')[1], type:'image/jpeg'}); };
+    img.onerror=()=>rej(new Error('No pude leer la foto'));
+    img.src=url; });
+}
+async function guardarEst(){
+  const b=document.getElementById('eOk'); const est=document.getElementById('eEst').value; const nota=document.getElementById('eNota').value.trim();
+  const file=document.getElementById('eFoto').files[0];
+  if(est==='Terminado' && !file && !(S.u.admin && nota)){ toast('Para terminarla toma una foto del trabajo',4000); return; }
+  b.disabled=true; b.textContent='Guardando…';
+  try{ const foto= file ? await comprimir(file) : null;
+    const r=await call('cambiarEstatus',S.a,S.edit,est,nota,foto);
+    cerrar('mEst'); if(r.gracias) gracias(r.gracias); else toast(r.msg||'Listo'); await cargar();
+  }catch(e){ toast(e.message,5000); }
+  finally{ b.disabled=false; b.textContent='Guardar'; }
+}
+function abrirCom(id){
+  const t=S.tareas.find(x=>x.id===id); S.com=id;
+  document.getElementById('cTit').textContent='Comentarios · '+t.id;
+  document.getElementById('cInfo').textContent=t.cliente+' · '+t.tarea+' · Responsable: '+t.resp;
+  document.getElementById('cColab').innerHTML=(t.colab||[]).map(c=>'<span class="chip'+(c.est==='Pendiente'?' pen':'')+'">'+(c.est==='Pendiente'?'⏳ ':'🤝 ')+esc(c.inv)+' — '+esc(c.motivo)+'</span>').join('');
+  const cs=t.coms||[];
+  document.getElementById('cLista').innerHTML = cs.length ? cs.map(c=>'<div class="com"><div class="q"><b>'+esc(c.u)+'</b> · '+esc(c.f)+'</div>'+esc(c.txt)+(c.foto?' <a class="foto" target="_blank" href="'+esc(c.foto)+'">ver foto</a>':'')+'</div>').join('') : '<div class="nota">Todavía no hay comentarios.</div>';
+  const ok=participa(t);
+  document.getElementById('cForm').style.display = ok ? 'block' : 'none';
+  if(!ok) document.getElementById('cLista').innerHTML+='<div class="nota" style="margin-top:8px">Solo el responsable, quienes colaboran y la encargada pueden comentar esta tarea.</div>';
+  document.getElementById('cTxt').value=''; document.getElementById('cFoto').value=''; document.getElementById('iMot').value='';
+  const ya=(t.colab||[]).map(c=>c.inv);
+  document.getElementById('iPer').innerHTML='<option value="">¿A quién invitas?</option>'+S.nombres.filter(n=>n!==t.resp && ya.indexOf(n)<0).map(n=>'<option>'+esc(n)+'</option>').join('');
+  abrir('mCom');
+  setTimeout(()=>{ const l=document.getElementById('cLista'); l.lastElementChild && l.lastElementChild.scrollIntoView({block:'nearest'}); },50);
+}
+async function enviarCom(){
+  const b=document.getElementById('cOk'); const txt=document.getElementById('cTxt').value.trim(); const file=document.getElementById('cFoto').files[0];
+  if(!txt && !file){ toast('Escribe un comentario'); return; }
+  b.disabled=true; b.textContent='Enviando…';
+  try{ const foto=file? await comprimir(file):null; const r=await call('comentar',S.a,S.com,txt,foto); toast(r.msg); await cargar(); abrirCom(S.com); }
+  catch(e){ toast(e.message,5000); } finally{ b.disabled=false; b.textContent='Enviar comentario'; }
+}
+async function invitarCol(){
+  const b=document.getElementById('iOk'); const p=document.getElementById('iPer').value; const m=document.getElementById('iMot').value.trim();
+  if(!p){ toast('Elige a quién invitas'); return; }
+  if(!m){ toast('Escribe por qué tiene que colaborar'); return; }
+  b.disabled=true;
+  try{ const r=await call('invitar',S.a,S.com,p,m); toast(r.msg); await cargar(); abrirCom(S.com); }
+  catch(e){ toast(e.message,5000); } finally{ b.disabled=false; }
+}
+async function responderInv(cid,acepta){
+  let resp='';
+  if(!acepta){ resp=prompt('¿Por qué no puedes colaborar?')||''; if(!resp.trim()){ toast('Escribe el motivo para rechazar'); return; } }
+  try{ const r=await call('responderInvitacion',S.a,cid,acepta,resp); toast(r.msg); await cargar(); }catch(e){ toast(e.message,5000); }
+}
+// ---------- Grupo ----------
+function kM(m){ return m.d+' '+m.f.slice(6); }
+function nuevos(){ const v=lee('fp_chat')||''; return S.chat.filter(m=>m.u!==S.u.n && kM(m)>v).length; }
+function marcaVistos(){ if(S.chat.length) guarda('fp_chat', kM(S.chat[S.chat.length-1])); }
+function pintaChat(){
+  if(!S.chat.length) return '<div class="empty">Aquí puede escribir todo el equipo, como en un grupo de WhatsApp.<br>Avisos, dudas, fotos: todos lo ven.</div>';
+  let h='<div class="chat">', dia='';
+  S.chat.forEach(m=>{
+    if(m.d!==dia){ dia=m.d; h+='<div class="dia">'+(m.d===S.hoy?'Hoy':fechaTxt(m.d).replace(' (vencida)',''))+'</div>'; }
+    const mio=m.u===S.u.n;
+    h+='<div class="msg'+(mio?' mio':'')+'">'+(mio?'':'<div class="q">'+esc(m.u)+'</div>')+esc(m.txt)+
+      (m.foto?'<a class="foto" target="_blank" href="'+esc(m.foto)+'">📷 ver foto</a>':'')+'<div class="h">'+esc(m.f.slice(6))+'</div></div>';
+  });
+  return h+'</div>';
+}
+async function enviarChat(){
+  const ta=document.getElementById('gTxt'), b=document.getElementById('gOk'), fi=document.getElementById('gFoto');
+  const txt=ta.value.trim(), file=fi.files[0];
+  if(!txt && !file) return;
+  b.disabled=true; b.textContent='…';
+  try{ const foto=file? await comprimir(file):null; await call('publicar',S.a,txt,foto); S.borr=''; await cargar(); }
+  catch(e){ toast(e.message,5000); b.disabled=false; b.textContent='➤'; }
+}
+function gracias(m){ const g=document.getElementById('thanks'); g.innerHTML='🎉<br>'+esc(m); g.style.display='flex'; setTimeout(()=>g.style.display='none',2600); }
+function opcionesResp(sel){ document.getElementById('nResp').innerHTML=S.nombres.map(n=>'<option'+(n===sel?' selected':'')+'>'+esc(n)+'</option>').join(''); }
+function nueva(){
+  S.nuevaId=null; document.getElementById('nTit').textContent='Nueva tarea';
+  ['nCli','nTar'].forEach(i=>document.getElementById(i).value=''); opcionesResp('');
+  document.getElementById('nFec').value=S.hoy; document.getElementById('nPrio').value='Normal'; abrir('mNew');
+}
+function editar(id){
+  const t=S.tareas.find(x=>x.id===id); S.nuevaId=id; document.getElementById('nTit').textContent='Editar '+id;
+  document.getElementById('nCli').value=t.cliente; document.getElementById('nTar').value=t.tarea; opcionesResp(t.resp);
+  document.getElementById('nFec').value=t.fecha; document.getElementById('nPrio').value=t.prio; abrir('mNew');
+}
+async function guardarNueva(){
+  const b=document.getElementById('nOk');
+  const t={cliente:document.getElementById('nCli').value.trim(), tarea:document.getElementById('nTar').value.trim(),
+    resp:document.getElementById('nResp').value, fecha:document.getElementById('nFec').value, prio:document.getElementById('nPrio').value};
+  if(!t.tarea||!t.resp||!t.fecha){ toast('Falta la tarea, el responsable o la fecha'); return; }
+  b.disabled=true;
+  try{ const r = S.nuevaId ? await call('editarTarea',S.a,S.nuevaId,t) : await call('nuevaTarea',S.a,t); cerrar('mNew'); toast(r.msg); await cargar(); }
+  catch(e){ toast(e.message,5000); } finally{ b.disabled=false; }
+}
+setInterval(()=>{ if(S.u && !document.querySelector('.modal.on') && S.vista!=='chat') cargar().catch(()=>{}); }, 60000);
+setInterval(()=>{ if(S.u && S.vista==='chat' && !document.hidden){ const ul=S.chat.length?kM(S.chat[S.chat.length-1])+S.chat.length:''; call('datos',S.a).then(d=>{ S.tareas=d.tareas; S.invit=d.invit||[]; S.chat=d.chat||[]; if((S.chat.length?kM(S.chat[S.chat.length-1])+S.chat.length:'')!==ul) pintar(); }).catch(()=>{}); } }, 15000);
+inicio();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>

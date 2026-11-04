@@ -1,0 +1,16 @@
+{
+  "name": "Focus Print · Seguimiento",
+  "short_name": "Focus Print",
+  "description": "Tareas del equipo de Focus Print con semáforo, fotos y grupo.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1d2433",
+  "theme_color": "#1d2433",
+  "lang": "es-MX",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
