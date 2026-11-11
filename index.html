@@ -59,6 +59,26 @@ a.foto{font-size:13px;color:#1a5fb4}
 .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 16px;border-radius:10px;z-index:30;display:none;max-width:90%;text-align:center}
 .thanks{position:fixed;inset:0;background:#1e8e3eee;color:#fff;display:none;align-items:center;justify-content:center;z-index:40;text-align:center;padding:30px;font-size:24px;font-weight:700}
 .prev{max-width:100%;max-height:180px;border-radius:8px;margin-top:8px;display:none}
+.fbtn{display:flex;gap:8px;margin-top:4px}.fbtn label.btn{flex:1;text-align:center;margin:0;cursor:pointer}
+.fsel{font-size:13px;color:#1e8e3e;margin-top:6px;font-weight:600}
+.cola{background:#fff4ce;color:#5b4a00;border-radius:10px;padding:9px 12px;margin:8px 0;font-size:13.5px;display:flex;gap:8px;align-items:center;justify-content:space-between}
+.cola button{border:none;border-radius:8px;padding:7px 10px;font-weight:700;background:#5b4a00;color:#fff}
+.offl{background:#e8eaed;color:#3c4043;border-radius:10px;padding:9px 12px;margin:8px 0;font-size:13.5px}
+.wa{border-color:#25d366!important;color:#128c7e!important}
+.fiesta{position:fixed;inset:0;z-index:60;display:none;pointer-events:none;overflow:hidden;background:radial-gradient(circle,#fffbe8f2,#ffd54fd9)}
+.fiesta span{position:absolute;top:-70px;animation:cae 1.7s ease-in forwards}
+@keyframes cae{to{transform:translateY(118vh) rotate(560deg)}}
+.ftxt{position:absolute;top:36%;left:0;right:0;text-align:center;font-size:30px;font-weight:800;color:#1d2433;padding:0 20px;animation:late .5s ease-in-out infinite alternate}
+.ftxt small{display:block;font-size:21px;color:#1e8e3e;margin-top:8px}
+@keyframes late{to{transform:scale(1.08)}}
+.satg{background:#e6f4ea;color:#1e6b34;border-radius:10px;padding:10px 12px;font-weight:700;font-size:16px;margin-bottom:6px}
+.satb{width:100%;margin-top:8px;border:2px solid #1e8e3e;background:#e6f4ea;color:#14532d;border-radius:12px;padding:10px 12px;font-weight:700;font-size:14.5px}
+.satb.preg{border-color:#f9ab00;background:#fff4ce;color:#5b4a00}
+.sres{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.srow{background:#fff;border-radius:12px;padding:10px 12px;margin:8px 0;border-left:5px solid #1e8e3e;font-size:14px}
+.srow.no{border-left-color:#d93025}.srow.res{border-left-color:#f9ab00}
+.srow .q{color:#6b7280;font-size:12.5px}
+.lock{background:#fde8e6;color:#7a1f16;border-radius:10px;padding:9px 12px;font-size:13px;margin-top:8px}
 .yo{font-size:20px;font-weight:800}
 .grp{margin:18px 0 8px;display:flex;align-items:baseline;justify-content:space-between;border-bottom:3px solid var(--ink);padding-bottom:4px}
 .grp h2{margin:0;font-size:24px;font-weight:800}
@@ -132,6 +152,7 @@ body.mini .mrow .who{color:var(--mut);width:70px;white-space:nowrap;overflow:hid
 <div id="app"></div>
 <div class="toast" id="toast"></div>
 <div class="thanks" id="thanks"></div>
+<div class="fiesta" id="fiesta"></div>
 
 <div class="modal" id="mEst"><div class="sheet">
   <h3 id="eTit">Cambiar estatus</h3>
@@ -139,7 +160,7 @@ body.mini .mrow .who{color:var(--mut);width:70px;white-space:nowrap;overflow:hid
   <label>Estatus</label>
   <select id="eEst"><option>Pendiente</option><option>En proceso</option><option>Detenido</option><option>Terminado</option></select>
   <label id="eFotoLbl">Foto del trabajo</label>
-  <input type="file" id="eFoto" accept="image/*" capture="environment">
+  <div class="fbtn"><label class="btn">📷 Tomar foto<input type="file" id="eFoto" accept="image/*" capture="environment" style="display:none"></label><label class="btn">🖼️ Galería / archivo<input type="file" id="eFoto2" accept="image/*" style="display:none"></label></div>
   <img id="ePrev" class="prev" alt="">
   <label>Nota (opcional)</label>
   <textarea id="eNota" rows="2" placeholder="Ej. falta material, se entregó a Fermín..."></textarea>
@@ -154,13 +175,29 @@ body.mini .mrow .who{color:var(--mut);width:70px;white-space:nowrap;overflow:hid
   <div id="cForm">
     <div class="secc">Agregar comentario</div>
     <textarea id="cTxt" rows="3" placeholder="Ej. Falta comprar vinil negro; el cliente pidió cambiar la medida..."></textarea>
-    <input type="file" id="cFoto" accept="image/*" capture="environment" style="margin-top:6px">
+    <div class="fbtn" style="margin-top:6px"><label class="btn">📷 Tomar foto<input type="file" id="cFoto" accept="image/*" capture="environment" style="display:none"></label><label class="btn">🖼️ Galería / archivo<input type="file" id="cFoto2" accept="image/*" style="display:none"></label></div>
+    <div id="cSel" class="fsel"></div>
     <button class="btn pri" style="margin-top:8px" id="cOk" onclick="enviarCom()">Enviar comentario</button>
     <div class="secc">Invitar a alguien a colaborar</div>
     <select id="iPer"></select>
     <textarea id="iMot" rows="2" style="margin-top:6px" placeholder="¿Por qué tiene que colaborar? Ej. hay que comprar 2 rollos de vinil"></textarea>
     <button class="btn" style="margin-top:8px;width:100%" id="iOk" onclick="invitarCol()">Enviar invitación</button>
   </div>
+</div></div>
+
+<div class="modal" id="mSat"><div class="sheet"><div id="sBody"></div></div></div>
+
+<div class="modal" id="mWA"><div class="sheet">
+  <h3>📲 Enviar por WhatsApp</h3>
+  <div id="wInfo" class="nota"></div>
+  <div class="lock">🔒 Cada envío queda registrado y Loriel recibe un aviso con la tarea y el número.</div>
+  <label>¿A quién se lo envías?</label><select id="wPer" onchange="waTipo()"></select>
+  <div id="wOtro" style="display:none">
+    <label>Número de WhatsApp (10 dígitos; si es extranjero, con lada del país)</label><input id="wNum" inputmode="tel" placeholder="667 123 4567">
+    <label>Motivo del envío (obligatorio)</label><input id="wMot" placeholder="Ej. instalador externo, proveedor de lona…">
+  </div>
+  <div id="wLink"></div>
+  <div class="row" style="margin-top:14px"><button class="btn" onclick="cerrar('mWA')">Cancelar</button><button class="btn pri" id="wOk" onclick="enviarWA()">Continuar</button></div>
 </div></div>
 
 <div class="modal" id="mNew"><div class="sheet">
@@ -215,8 +252,10 @@ let S = {u:null, a:null, tareas:[], chat:[], invit:[], nombres:[], hoy:'', vista
 
 function call(fn){ const args=[].slice.call(arguments,1);
   if(EN_GOOGLE) return new Promise((res,rej)=>google.script.run.withSuccessHandler(res).withFailureHandler(e=>rej(e))[fn].apply(null,args));
+  const sinRed=()=>{ const e=new Error('Sin conexión. Revisa tu internet e intenta de nuevo.'); e.offline=true; return e; };
+  if(navigator.onLine===false) return Promise.reject(sinRed());
   return fetch(API_URL,{method:'POST',body:JSON.stringify({fn:fn,args:args}),credentials:'omit',redirect:'follow'})
-    .then(r=>r.json()).catch(()=>{ throw new Error('Sin conexión. Revisa tu internet e intenta de nuevo.'); })
+    .then(r=>r.json()).catch(()=>{ throw sinRed(); })
     .then(j=>{ if(!j.ok) throw new Error(j.error); return j.r; }); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function toast(m,ms){ const t=document.getElementById('toast'); t.textContent=m; t.style.display='block'; clearTimeout(t._h); t._h=setTimeout(()=>t.style.display='none',ms||3000); }
@@ -262,7 +301,7 @@ function participa(t){ return S.u && (S.u.admin || esMia(t)); }
 async function inicio(){
   if(MINI) document.body.classList.add('mini');
   const n=lee('fp_n'), p=lee('fp_p');
-  if(n && p){ S.a={n:n,p:p}; try{ await cargar(); return; }catch(e){ guarda('fp_p',null); } }
+  if(n && p){ S.a={n:n,p:p}; try{ await cargar(); subirCola(); return; }catch(e){ if(e.offline && desdeCache()) return; guarda('fp_p',null); } }
   pantallaLogin();
 }
 async function pantallaLogin(err){
@@ -283,11 +322,17 @@ async function entrar(){
   try{ await cargar(); guarda('fp_n',n); guarda('fp_p',p); }
   catch(e){ document.getElementById('lE').textContent=e.message; }
 }
-function salir(){ guarda('fp_p',null); S.a=null; S.u=null; pantallaLogin(); }
+function salir(){ guarda('fp_p',null); guarda('fp_cache',null); S.a=null; S.u=null; pantallaLogin(); }
 
 // ---------- Datos ----------
 async function cargar(silencioso){
   const d=await call('datos',S.a);
+  S.offline=false; try{ localStorage.setItem('fp_cache',JSON.stringify(d)); }catch(e){}
+  aplica(d);
+}
+// Sin internet: muestra lo último que se cargó para poder trabajar y subir después
+function desdeCache(){ try{ const d=JSON.parse(lee('fp_cache')||'null'); if(!d||!d.u||d.u.n!==S.a.n) return false; S.offline=true; aplica(d); colaCuenta().then(n=>{ S.nCola=n; pintar(); }); return true; }catch(e){ return false; } }
+function aplica(d){
   S.u=d.u; S.tareas=d.tareas; S.nombres=d.nombres; S.hoy=d.hoy; S.invit=d.invit||[]; S.chat=d.chat||[]; S.otPend=d.otPend||[];
   if(!S._init){ S._init=true; S.vista = (S.u.admin||MINI) ? 'todas' : 'mias'; }
   pintar();
@@ -306,7 +351,7 @@ function filtradas(){
   let ts=S.tareas.slice();
   if(S.vista==='mias') ts=ts.filter(t=>esMia(t));
   if(S.vista==='todas' && S.persona) ts=ts.filter(t=>t.resp===S.persona);
-  if(S.ocultar) ts=ts.filter(t=>t.est!=='Terminado' || t.act.indexOf(S.hoy.slice(8,10)+'/'+S.hoy.slice(5,7))===0);
+  if(S.ocultar) ts=ts.filter(t=>t.est!=='Terminado' || t.sat==='no' || t.act.indexOf(S.hoy.slice(8,10)+'/'+S.hoy.slice(5,7))===0);
   ts.sort((x,y)=>ORD[luz(x)]-ORD[luz(y)] || (critico(y)-critico(x)) || (x.fecha<y.fecha?-1:x.fecha>y.fecha?1:0));
   return ts;
 }
@@ -320,13 +365,16 @@ function pintar(){
   let h='<header><div class="top"><b>'+(MINI?'Pendientes':'Focus Print')+'</b><span><span class="yo">'+esc(S.u.n)+'</span> <button onclick="salir()">Salir</button></span></div>'+
     '<div class="cont"><span class="pill"><span class="dot d-r"></span>'+c.r+' rojo</span><span class="pill"><span class="dot d-a"></span>'+c.a+' hoy</span>'+
     '<span class="pill"><span class="dot d-c"></span>'+base.filter(critico).length+' crítico</span><span class="pill"><span class="dot d-v"></span>'+c.v+' a tiempo</span><span class="pill"><span class="dot d-ok"></span>'+hechas+'/'+total+' · '+pct+'%</span></div></header>';
+  if(S.offline) h+='<div class="offl">📴 Sin internet: estás viendo lo último que se cargó. Puedes tomar fotos y marcar tareas; se suben solas al llegar al taller.</div>';
+  if(S.nCola) h+='<div class="cola"><span>⏳ '+S.nCola+' foto'+(S.nCola>1?'s o cambios':' o cambio')+' guardado'+(S.nCola>1?'s':'')+' en tu celular, pendiente de subir</span><button onclick="subirCola(true)">Subir ahora</button></div>';
   h+='<div class="bar">';
-  if(!MINI) h+='<button class="tab'+(S.vista==='mias'?' on':'')+'" onclick="S.vista=\'mias\';pintar()">Mis tareas</button><button class="tab'+(S.vista==='todas'?' on':'')+'" onclick="S.vista=\'todas\';pintar()">Todo el equipo</button><button class="tab'+(S.vista==='chat'?' on':'')+'" onclick="S.vista=\'chat\';pintar()">💬 Grupo'+(nuevos()?'<span class="badge">'+nuevos()+'</span>':'')+'</button>';
+  if(!MINI) h+='<button class="tab'+(S.vista==='mias'?' on':'')+'" onclick="S.vista=\'mias\';pintar()">Mis tareas</button><button class="tab'+(S.vista==='todas'?' on':'')+'" onclick="S.vista=\'todas\';pintar()">Todo el equipo</button><button class="tab'+(S.vista==='chat'?' on':'')+'" onclick="S.vista=\'chat\';pintar()">💬 Grupo'+(nuevos()?'<span class="badge">'+nuevos()+'</span>':'')+'</button>'+(S.u.admin?'<button class="tab'+(S.vista==='sat'?' on':'')+'" onclick="verSat()">⭐ Satisfacción</button>':'');
   if(S.vista==='chat'){ h+='<button class="tab" onclick="refrescar()">↻</button></div><main>'+pintaChat()+'</main>'+
     '<div class="envio"><label>📷<input type="file" id="gFoto" accept="image/*" style="display:none" onchange="enviarChat()"></label>'+
     '<textarea id="gTxt" rows="1" placeholder="Escribe un mensaje para todo el equipo" oninput="S.borr=this.value"></textarea><button id="gOk" onclick="enviarChat()">➤</button></div>';
     app.innerHTML=h; const ta=document.getElementById('gTxt'); ta.value=S.borr||'';
     marcaVistos(); window.scrollTo(0,document.body.scrollHeight); return; }
+  if(S.vista==='sat'){ h+='<button class="tab" onclick="verSat()">↻</button></div><main>'+pintaSat()+'</main>'; app.innerHTML=h; return; }
   if(S.vista==='todas') h+='<select onchange="S.persona=this.value;pintar()"><option value="">Todos</option>'+S.nombres.map(n=>'<option'+(n===S.persona?' selected':'')+'>'+esc(n)+'</option>').join('')+'</select>';
   h+='<label style="font-size:13px;display:flex;align-items:center;gap:4px;width:auto"><input type="checkbox" style="width:auto" '+(S.ocultar?'checked':'')+' onchange="S.ocultar=this.checked;pintar()">Ocultar terminadas</label>';
   h+='<button class="tab" onclick="refrescar()">↻</button></div><main>';
@@ -379,9 +427,14 @@ function tarjeta(t){
     h+='<button class="ob" onclick="abrirEst(\''+t.id+'\')">📷 Avance</button>';
   }
   h+='<button class="ob" onclick="abrirCom(\''+t.id+'\')">💬'+(nc?' '+nc:'')+'</button>';
+  if(participa(t)) h+='<button class="ob wa" onclick="abrirWA(\''+t.id+'\')">📲 WhatsApp</button>';
   if(S.u.admin) h+='<button class="ob" onclick="editar(\''+t.id+'\')">✎</button>';
   h+='</div>';
   h+=filaOT(t);
+  if(t.est==='Terminado' && puede(t)){
+    if(!t.sat) h+='<button class="satb preg" onclick="satPregunta(\''+t.id+'\')">⭐ ¿El cliente quedó 100% satisfecho? Contesta aquí</button>';
+    else if(t.sat==='no') h+='<button class="satb" onclick="satOK(\''+t.id+'\')">✅ Cliente 100% Satisfecho</button>';
+  }
   return h+'</div>';
 }
 function puedeOT(){ return S.u && (S.u.admin || S.u.n==='Loriel'); }
@@ -403,12 +456,13 @@ function filaMini(t){
 // ---------- Acciones ----------
 async function refrescar(){ try{ await cargar(); toast('Actualizado'); }catch(e){ toast(e.message); } }
 async function rapido(id,est){
-  try{ const r=await call('cambiarEstatus',S.a,id,est,'',null); toast(r.msg||'Listo'); await cargar(); }catch(e){ toast(e.message,5000); }
+  try{ const r=await call('cambiarEstatus',S.a,id,est,'',null); toast(r.msg||'Listo'); await cargar(); }
+  catch(e){ if(e.offline){ await guardaSinSenal('cambiarEstatus',[S.a,id,est,'(registrado sin señal '+sello()+')',null],id,est); return; } toast(e.message,5000); }
 }
 async function miniCambio(id,sel){
   const est=sel.value; let nota='';
   if(est==='Terminado'){ nota=prompt('Sin foto: escribe una nota para cerrarla (ej. "revisado por Loriel")')||''; if(!nota){ await cargar(); return; } }
-  try{ const r=await call('cambiarEstatus',S.a,id,est,nota,null); if(r.gracias) gracias(r.gracias); else toast(r.msg); await cargar(); }catch(e){ toast(e.message,5000); await cargar(); }
+  try{ const r=await call('cambiarEstatus',S.a,id,est,nota,null); if(r.gracias) satPregunta(id,r.gracias); else toast(r.msg); await cargar(); }catch(e){ toast(e.message,5000); await cargar(); }
 }
 function abrirEst(id,est){
   const t=S.tareas.find(x=>x.id===id); S.edit=id;
@@ -416,12 +470,13 @@ function abrirEst(id,est){
   document.getElementById('eInfo').textContent = t.cliente+' · '+t.tarea;
   document.getElementById('eEst').value = est || t.est;
   document.getElementById('eNota').value='';
-  const f=document.getElementById('eFoto'); f.value=''; document.getElementById('ePrev').style.display='none';
+  const f=document.getElementById('eFoto'); f.value=''; document.getElementById('eFoto2').value=''; S.fEst=null; document.getElementById('ePrev').style.display='none';
   document.getElementById('eFotoLbl').textContent = (est==='Terminado') ? 'Foto del trabajo terminado (obligatoria)' : 'Foto del trabajo (opcional)';
   abrir('mEst');
 }
 document.addEventListener('change',e=>{
-  if(e.target.id==='eFoto' && e.target.files[0]){ const p=document.getElementById('ePrev'); p.src=URL.createObjectURL(e.target.files[0]); p.style.display='block'; }
+  if((e.target.id==='eFoto'||e.target.id==='eFoto2') && e.target.files[0]){ S.fEst=e.target.files[0]; const p=document.getElementById('ePrev'); p.src=URL.createObjectURL(S.fEst); p.style.display='block'; }
+  if((e.target.id==='cFoto'||e.target.id==='cFoto2') && e.target.files[0]){ S.fCom=e.target.files[0]; document.getElementById('cSel').textContent='📎 Foto lista: '+(S.fCom.name||'foto'); }
 });
 function comprimir(file){
   return new Promise((res,rej)=>{
@@ -435,12 +490,15 @@ function comprimir(file){
 }
 async function guardarEst(){
   const b=document.getElementById('eOk'); const est=document.getElementById('eEst').value; const nota=document.getElementById('eNota').value.trim();
-  const file=document.getElementById('eFoto').files[0];
+  const file=S.fEst;
   if(est==='Terminado' && !file && !(S.u.admin && nota)){ toast('Para terminarla toma una foto del trabajo',4000); return; }
   b.disabled=true; b.textContent='Guardando…';
   try{ const foto= file ? await comprimir(file) : null;
-    const r=await call('cambiarEstatus',S.a,S.edit,est,nota,foto);
-    cerrar('mEst'); if(r.gracias) gracias(r.gracias); else toast(r.msg||'Listo'); await cargar();
+    try{ const r=await call('cambiarEstatus',S.a,S.edit,est,nota,foto);
+      cerrar('mEst'); if(r.gracias) satPregunta(S.edit,r.gracias); else toast(r.msg||'Listo'); await cargar(); }
+    catch(e){ if(!e.offline) throw e; cerrar('mEst');
+      await guardaSinSenal('cambiarEstatus',[S.a,S.edit,est,(nota?nota+' · ':'')+'(registrado sin señal '+sello()+')',foto],S.edit,est);
+      if(est==='Terminado') satPregunta(S.edit,'¡Gracias, '+S.u.n+'! Tu trabajo quedó guardado y se sube al tener señal.'); }
   }catch(e){ toast(e.message,5000); }
   finally{ b.disabled=false; b.textContent='Guardar'; }
 }
@@ -454,17 +512,21 @@ function abrirCom(id){
   const ok=participa(t);
   document.getElementById('cForm').style.display = ok ? 'block' : 'none';
   if(!ok) document.getElementById('cLista').innerHTML+='<div class="nota" style="margin-top:8px">Solo el responsable, quienes colaboran y la encargada pueden comentar esta tarea.</div>';
-  document.getElementById('cTxt').value=''; document.getElementById('cFoto').value=''; document.getElementById('iMot').value='';
+  document.getElementById('cTxt').value=''; document.getElementById('cFoto').value=''; document.getElementById('cFoto2').value=''; S.fCom=null; document.getElementById('cSel').textContent=''; document.getElementById('iMot').value='';
   const ya=(t.colab||[]).map(c=>c.inv);
   document.getElementById('iPer').innerHTML='<option value="">¿A quién invitas?</option>'+S.nombres.filter(n=>n!==t.resp && ya.indexOf(n)<0).map(n=>'<option>'+esc(n)+'</option>').join('');
   abrir('mCom');
   setTimeout(()=>{ const l=document.getElementById('cLista'); l.lastElementChild && l.lastElementChild.scrollIntoView({block:'nearest'}); },50);
 }
 async function enviarCom(){
-  const b=document.getElementById('cOk'); const txt=document.getElementById('cTxt').value.trim(); const file=document.getElementById('cFoto').files[0];
+  const b=document.getElementById('cOk'); const txt=document.getElementById('cTxt').value.trim(); const file=S.fCom;
   if(!txt && !file){ toast('Escribe un comentario'); return; }
   b.disabled=true; b.textContent='Enviando…';
-  try{ const foto=file? await comprimir(file):null; const r=await call('comentar',S.a,S.com,txt,foto); toast(r.msg); await cargar(); abrirCom(S.com); }
+  try{ const foto=file? await comprimir(file):null;
+    try{ const r=await call('comentar',S.a,S.com,txt,foto); toast(r.msg); await cargar(); abrirCom(S.com); }
+    catch(e){ if(!e.offline) throw e; cerrar('mCom');
+      await guardaSinSenal('comentar',[S.a,S.com,(txt?txt+' ':'')+'(sin señal '+sello()+')',foto],S.com,null); }
+  }
   catch(e){ toast(e.message,5000); } finally{ b.disabled=false; b.textContent='Enviar comentario'; }
 }
 async function invitarCol(){
@@ -594,6 +656,134 @@ async function enviarChat(){
   b.disabled=true; b.textContent='…';
   try{ const foto=file? await comprimir(file):null; await call('publicar',S.a,txt,foto); S.borr=''; await cargar(); }
   catch(e){ toast(e.message,5000); b.disabled=false; b.textContent='➤'; }
+}
+// ---------- Sin señal: lo que no se pudo subir se guarda en el celular y se sube solo ----------
+let _db=null;
+function colaDB(){ return _db || (_db=new Promise((res,rej)=>{ const r=indexedDB.open('fp_cola',1);
+  r.onupgradeneeded=()=>r.result.createObjectStore('q',{keyPath:'k',autoIncrement:true}); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); })); }
+async function colaOp(modo,fn){ const db=await colaDB(); return new Promise((res,rej)=>{ const tx=db.transaction('q',modo); const rq=fn(tx.objectStore('q'));
+  tx.oncomplete=()=>res(rq&&rq.result); tx.onerror=()=>rej(tx.error); }); }
+async function colaCuenta(){ try{ return await colaOp('readonly',st=>st.count()); }catch(e){ return 0; } }
+function sello(){ const d=new Date(), z=x=>('0'+x).slice(-2); return z(d.getDate())+'/'+z(d.getMonth()+1)+' '+z(d.getHours())+':'+z(d.getMinutes()); }
+async function guardaSinSenal(fn,args,id,est){
+  try{ await colaOp('readwrite',st=>st.add({fn:fn,args:args,id:id,est:est,t:Date.now(),n:0})); }
+  catch(e){ toast('Sin señal y no pude guardar en el celular. Intenta de nuevo con internet.',6000); return; }
+  const t=S.tareas.find(x=>x.id===id); if(t && est){ t.est=est; t.act=sello(); t.actpor=S.u.n; }
+  S.nCola=await colaCuenta(); pintar();
+  toast('📴 Sin señal: quedó guardado en tu celular. Se sube solo cuando haya internet.',6000);
+}
+async function subirCola(manual){
+  if(S.subiendo || !S.a) return; S.subiendo=true; let ok=0, sigue=false;
+  try{ const items=await colaOp('readonly',st=>st.getAll());
+    for(const it of items){
+      try{ await call.apply(null,[it.fn].concat(it.args)); await colaOp('readwrite',st=>st.delete(it.k)); ok++; }
+      catch(e){ if(e.offline){ sigue=true; break; }
+        it.n=(it.n||0)+1;
+        if(it.n>=3){ await colaOp('readwrite',st=>st.delete(it.k)); toast('No se pudo subir '+it.id+': '+e.message,8000); }
+        else await colaOp('readwrite',st=>st.put(it)); }
+    }
+  }catch(e){}
+  S.subiendo=false; S.nCola=await colaCuenta();
+  if(ok){ toast('✅ Se subi'+(ok>1?'eron ':'ó ')+ok+' envío'+(ok>1?'s':'')+' que se guardaron sin señal',5000); try{ await cargar(); }catch(e){ if(S.u) pintar(); } }
+  else { if(manual && sigue) toast('Todavía no hay internet. Se intentará solo.',4000); if(S.u) pintar(); }
+}
+window.addEventListener('online',()=>{ if(S.offline) cargar().catch(()=>{}); subirCola(); });
+setInterval(()=>{ if(S.nCola) subirCola(); },45000);
+
+// ---------- Enviar tarea por WhatsApp (se registra y avisa a Loriel antes de abrir WhatsApp) ----------
+function abrirWA(id){
+  const t=S.tareas.find(x=>x.id===id); S.wa=id;
+  document.getElementById('wInfo').textContent=t.cliente+' · '+t.tarea+' ('+t.id+')';
+  document.getElementById('wPer').innerHTML='<option value="">Elige a quién…</option>'+S.nombres.filter(n=>n!==S.u.n).map(n=>'<option>'+esc(n)+'</option>').join('')+'<option value="__otro">Otro número (fuera del equipo)</option>';
+  document.getElementById('wNum').value=''; document.getElementById('wMot').value=''; document.getElementById('wOtro').style.display='none';
+  document.getElementById('wLink').innerHTML=''; const b=document.getElementById('wOk'); b.style.display=''; b.disabled=false; b.textContent='Continuar';
+  abrir('mWA');
+}
+function waTipo(){ document.getElementById('wOtro').style.display = document.getElementById('wPer').value==='__otro' ? 'block' : 'none'; }
+async function enviarWA(){
+  const per=document.getElementById('wPer').value, b=document.getElementById('wOk');
+  if(!per){ toast('Elige a quién se lo envías'); return; }
+  const otro=per==='__otro', num=document.getElementById('wNum').value.trim(), mot=document.getElementById('wMot').value.trim();
+  if(otro && num.replace(/\D/g,'').length<10){ toast('Escribe el número completo (10 dígitos)'); return; }
+  if(otro && !mot){ toast('Escribe el motivo: es un número fuera del equipo'); return; }
+  b.disabled=true; b.textContent='Registrando…';
+  try{ const r=await call('enviarWhatsApp',S.a,S.wa,otro?num:per,otro?mot:'');
+    b.style.display='none';
+    document.getElementById('wLink').innerHTML='<div class="nota" style="margin-top:10px">✅ '+esc(r.msg)+'</div><a class="btn ter" style="display:block;text-align:center;margin-top:8px;text-decoration:none;padding:13px" target="_blank" rel="noopener" href="'+esc(r.url)+'" onclick="setTimeout(()=>cerrar(\'mWA\'),600)">📲 Abrir WhatsApp y enviar</a>';
+  }catch(e){ toast(e.offline?'Sin internet: para mandar por WhatsApp primero se registra el envío. Inténtalo cuando tengas señal.':e.message,6000); b.disabled=false; b.textContent='Continuar'; }
+}
+// ---------- Satisfacción del cliente al terminar ----------
+async function callOCola(fn,args,id){ try{ return await call.apply(null,[fn].concat(args)); }catch(e){ if(!e.offline) throw e; await guardaSinSenal(fn,args,id,null); return {queued:true}; } }
+function satPregunta(id,grac){
+  S.sat=id; const t=S.tareas.find(x=>x.id===id)||{};
+  document.getElementById('sBody').innerHTML=(grac?'<div class="satg">🙌 '+esc(grac)+'</div>':'')+
+    '<div class="nota">'+esc((t.cliente||'')+' · '+(t.tarea||''))+'</div><h3 style="margin-top:12px">¿Este trabajo generó 100% de satisfacción en el cliente?</h3>'+
+    '<div class="row" style="margin-top:12px"><button class="btn ter" style="padding:15px;font-size:17px" onclick="satSi()">👍 Sí</button><button class="btn det" style="padding:15px;font-size:17px" onclick="satNo()">👎 No</button></div>'+
+    '<button class="btn" style="width:100%;margin-top:10px" onclick="cerrar(\'mSat\')">Contestar después</button>';
+  abrir('mSat');
+}
+async function satSi(){
+  try{ await callOCola('registrarSatisfaccion',[S.a,S.sat,true,''],S.sat); cerrar('mSat'); marcaSat('si'); fiesta('¡Gracias, '+S.u.n+'!','Cliente 100% satisfecho'); }
+  catch(e){ toast(e.message,5000); }
+}
+function satNo(){
+  document.getElementById('sBody').innerHTML='<h3>¿Cuál es la razón y qué se requiere para conseguir satisfacción por parte del cliente al 100%?</h3>'+
+    '<textarea id="sRaz" rows="4" placeholder="Ej. el cliente vio una burbuja en el vinil; hay que regresar a cambiar la pieza"></textarea>'+
+    '<button class="btn pri" style="margin-top:10px" id="sOk" onclick="satGuardaNo()">Guardar</button>';
+}
+async function satGuardaNo(){
+  const raz=document.getElementById('sRaz').value.trim(); if(!raz){ toast('Escribe la razón y qué se requiere'); return; }
+  const b=document.getElementById('sOk'); b.disabled=true; b.textContent='Guardando…';
+  try{ await callOCola('registrarSatisfaccion',[S.a,S.sat,false,raz],S.sat); marcaSat('no');
+    document.getElementById('sBody').innerHTML='<div class="nota">📝 Quedó registrado. Cuando el cliente quede satisfecho al 100%, toca este botón. También queda en la tarjeta de la tarea.</div>'+
+      '<button class="btn ter" style="width:100%;padding:15px;font-size:17px;margin-top:10px" onclick="satOK(S.sat)">✅ Cliente 100% Satisfecho</button>'+
+      '<button class="btn" style="width:100%;margin-top:8px" onclick="cerrar(\'mSat\')">Cerrar</button>';
+  }catch(e){ toast(e.message,5000); b.disabled=false; b.textContent='Guardar'; }
+}
+function satOK(id){
+  S.sat=id; const t=S.tareas.find(x=>x.id===id)||{};
+  document.getElementById('sBody').innerHTML='<div class="nota">'+esc((t.cliente||'')+' · '+(t.tarea||''))+'</div>'+
+    '<h3 style="margin-top:10px">¿Qué acción o acciones llevaste a cabo para que el cliente quedara 100% satisfecho?</h3>'+
+    '<textarea id="sAcc" rows="4" placeholder="Ej. se reimprimió la pieza y se volvió a instalar el viernes"></textarea>'+
+    '<button class="btn pri" style="margin-top:10px" id="sOk" onclick="satGuardaOK()">Guardar</button>'+
+    '<button class="btn" style="width:100%;margin-top:8px" onclick="cerrar(\'mSat\')">Cancelar</button>';
+  abrir('mSat');
+}
+async function satGuardaOK(){
+  const acc=document.getElementById('sAcc').value.trim(); if(!acc){ toast('Escribe qué acciones llevaste a cabo'); return; }
+  const b=document.getElementById('sOk'); b.disabled=true; b.textContent='Guardando…';
+  try{ await callOCola('clienteSatisfecho',[S.a,S.sat,acc],S.sat); cerrar('mSat'); marcaSat('resuelto'); fiesta('¡Felicidades, '+S.u.n+'!','Cliente 100% satisfecho'); }
+  catch(e){ toast(e.message,5000); b.disabled=false; b.textContent='Guardar'; }
+}
+function marcaSat(v){ const t=S.tareas.find(x=>x.id===S.sat); if(t) t.sat=v; if(S.u) pintar(); }
+function fiesta(tit,sub){
+  const f=document.getElementById('fiesta'), em=['👏','🎉','🎊','👏','🥳','⭐','👏','🎉','✨'];
+  let h='<div class="ftxt">'+esc(tit)+'<small>'+esc(sub)+' 👏👏👏</small></div>';
+  for(let i=0;i<70;i++) h+='<span style="left:'+(Math.random()*96).toFixed(1)+'%;animation-delay:'+(Math.random()*0.5).toFixed(2)+'s;font-size:'+(24+Math.random()*28|0)+'px">'+em[i%em.length]+'</span>';
+  f.innerHTML=h; f.style.display='block';
+  try{ navigator.vibrate && navigator.vibrate([120,60,120,60,220]); }catch(e){}
+  try{ aplauso(); }catch(e){}
+  clearTimeout(f._h); f._h=setTimeout(()=>{ f.style.display='none'; f.innerHTML=''; },2000);
+}
+function aplauso(){
+  const C=window.AudioContext||window.webkitAudioContext; if(!C) return;
+  const ac=new C(); if(ac.resume) ac.resume(); const n=Math.floor(ac.sampleRate*1.9), buf=ac.createBuffer(1,n,ac.sampleRate), d=buf.getChannelData(0);
+  for(let c=0;c<55;c++){ const s=Math.floor(Math.random()*(n-4000)); for(let i=0;i<3000;i++) d[s+i]+=(Math.random()*2-1)*Math.exp(-i/300)*0.45; }
+  const src=ac.createBufferSource(); src.buffer=buf; const fl=ac.createBiquadFilter(); fl.type='bandpass'; fl.frequency.value=1600; fl.Q.value=0.6;
+  src.connect(fl); fl.connect(ac.destination); src.start(); setTimeout(()=>{ try{ ac.close(); }catch(e){} },2200);
+}
+function verSat(){ S.vista='sat'; pintar(); call('satisfaccionLista',S.a).then(l=>{ S.satL=l; if(S.vista==='sat') pintar(); }).catch(e=>toast(e.message,5000)); }
+function pintaSat(){
+  if(!S.satL) return '<div class="empty">Cargando…</div>';
+  const L=S.satL; if(!L.length) return '<div class="empty">Todavía no hay respuestas de satisfacción.</div>';
+  const si=L.filter(x=>x.si).length, res=L.filter(x=>!x.si&&x.f100).length, pen=L.filter(x=>!x.si&&!x.f100).length;
+  let h='<div class="nota">🔒 Solo lo ven Loriel, Esmeralda y Guillermo. Se guarda en la hoja "Satisfaccion".</div><div class="sres">'+
+    '<span class="pill" style="background:#e6f4ea;color:#1e6b34">👍 '+si+' al 100% a la primera</span><span class="pill" style="background:#fff4ce;color:#5b4a00">🔧 '+res+' corregidos</span><span class="pill" style="background:#fde8e6;color:#7a1f16">😟 '+pen+' pendientes</span>'+
+    '<span class="pill">'+(L.length?Math.round(100*si/L.length):0)+'% satisfechos a la primera</span></div>';
+  L.forEach(x=>{ h+='<div class="srow '+(x.si?'':(x.f100?'res':'no'))+'"><div class="q">'+esc(x.f)+' · '+esc(x.tarea)+' · '+esc(x.resp)+'</div><b>'+esc(x.cliente)+'</b> · '+esc(x.trabajo)+
+    '<div style="margin-top:4px">'+(x.si?'👍 Cliente 100% satisfecho':'😟 <b>No al 100%.</b> '+esc(x.razon))+'</div>'+
+    (x.f100?'<div style="margin-top:4px">✅ <b>Quedó al 100% el '+esc(x.f100)+'</b> ('+esc(x.quien100)+'): '+esc(x.acciones)+'</div>':'')+'</div>'; });
+  return h;
 }
 function gracias(m){ const g=document.getElementById('thanks'); g.innerHTML='🎉<br>'+esc(m); g.style.display='flex'; setTimeout(()=>g.style.display='none',2600); }
 function opcionesResp(sel){ document.getElementById('nResp').innerHTML=S.nombres.map(n=>'<option'+(n===sel?' selected':'')+'>'+esc(n)+'</option>').join(''); }
