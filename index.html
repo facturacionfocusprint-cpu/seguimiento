@@ -149,6 +149,18 @@ body.mini .mrow{display:flex;align-items:center;gap:6px;background:#fff;border-b
 body.mini .mrow .tx{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 body.mini .mrow select{width:108px;padding:3px;font-size:12px}
 body.mini .mrow .who{color:var(--mut);width:70px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Facturación (solo dirección) */
+.facw{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.fcn{border:1px dashed #7c3aed;background:#f5f0ff;color:#5b21b6;border-radius:9px;padding:9px 12px;font-size:14px;font-weight:700;text-align:left}
+.fcn small{font-weight:400;color:#7c6aa8;margin-left:6px;font-size:11px}
+.fcb{border:1px solid #c7d2fe;background:#eef2ff;color:#3730a3;border-radius:9px;padding:8px 12px;font-size:13px;font-weight:600;text-align:left}
+.fcb.venc{background:#fde8e6;border-color:#f5b5ae;color:#b42318}.fcb.pag{background:#e6f4ea;border-color:#a8dab5;color:#1e6b34}
+.btn.tipo.on{background:var(--ink);color:#fff}
+.fcon{border:1px solid var(--line);border-radius:9px;padding:8px;margin-bottom:6px}.fcon textarea{margin-bottom:6px}
+.fcon .row input,.fcon .row select,.fcal input{padding:8px 6px;font-size:14px;min-width:0}
+.ftot{background:var(--bg);border-radius:9px;padding:10px;margin-top:10px;font-size:14px}
+.fpago{border:1px solid var(--line);border-radius:9px;padding:8px;margin-bottom:6px;font-size:14px}.fpago.pag{background:#e6f4ea}.fpago.venc{background:#fde8e6}
+.ftab{width:100%;border-collapse:collapse;font-size:13.5px}.ftab th{text-align:left;color:var(--mut);font-weight:600;border-bottom:1px solid var(--line);padding:4px}.ftab td{padding:6px 4px;border-bottom:1px solid var(--line)}
 </style>
 </head>
 <body>
@@ -245,6 +257,7 @@ body.mini .mrow .who{color:var(--mut);width:70px;white-space:nowrap;overflow:hid
   <button class="btn pri" style="margin-top:12px" id="scOk" onclick="enviarAClaude()">Enviar a Claude</button>
   <div class="nota">Claude arma la OT con medidas, materiales, descripción y pasos, normalmente en menos de 1 hora, y te avisa para que la revises.</div>
 </div></div>
+<div class="modal" id="mFac"><div class="sheet" id="fV"></div></div>
 <div class="lb" id="lb" onclick="this.classList.remove('on')"><img id="lbImg" alt=""></div>
 
 <script>
@@ -339,6 +352,7 @@ function aplica(d){
   S.u=d.u; S.tareas=d.tareas; S.nombres=d.nombres; S.hoy=d.hoy; S.invit=d.invit||[]; S.chat=d.chat||[]; S.otPend=d.otPend||[];
   if(!S._init){ S._init=true; S.vista = (S.u.admin||MINI) ? 'todas' : 'mias'; }
   pintar();
+  cargarFac();
   if(!S._deep){ S._deep=true; const q=new URLSearchParams(location.search).get('t'); if(q) setTimeout(()=>abrirDeep(q),300); }
 }
 function abrirDeep(id){
@@ -371,12 +385,13 @@ function pintar(){
   if(S.offline) h+='<div class="offl">📴 Sin internet: estás viendo lo último que se cargó. Puedes tomar fotos y marcar tareas; se suben solas al llegar al taller.</div>';
   if(S.nCola) h+='<div class="cola"><span>⏳ '+S.nCola+' foto'+(S.nCola>1?'s o cambios':' o cambio')+' guardado'+(S.nCola>1?'s':'')+' en tu celular, pendiente de subir</span><button onclick="subirCola(true)">Subir ahora</button></div>';
   h+='<div class="bar">';
-  if(!MINI) h+='<button class="tab'+(S.vista==='mias'?' on':'')+'" onclick="S.vista=\'mias\';pintar()">Mis tareas</button><button class="tab'+(S.vista==='todas'?' on':'')+'" onclick="S.vista=\'todas\';pintar()">Todo el equipo</button><button class="tab'+(S.vista==='chat'?' on':'')+'" onclick="S.vista=\'chat\';pintar()">💬 Grupo'+(nuevos()?'<span class="badge">'+nuevos()+'</span>':'')+'</button>'+(S.u.admin?'<button class="tab'+(S.vista==='sat'?' on':'')+'" onclick="verSat()">⭐ Satisfacción</button>':'');
+  if(!MINI) h+='<button class="tab'+(S.vista==='mias'?' on':'')+'" onclick="S.vista=\'mias\';pintar()">Mis tareas</button><button class="tab'+(S.vista==='todas'?' on':'')+'" onclick="S.vista=\'todas\';pintar()">Todo el equipo</button><button class="tab'+(S.vista==='chat'?' on':'')+'" onclick="S.vista=\'chat\';pintar()">💬 Grupo'+(nuevos()?'<span class="badge">'+nuevos()+'</span>':'')+'</button>'+(S.u.admin?'<button class="tab'+(S.vista==='sat'?' on':'')+'" onclick="verSat()">⭐ Satisfacción</button>':'')+(puedeFac()?'<button class="tab'+(S.vista==='cxc'?' on':'')+'" onclick="verCxC()">💰 Cobranza</button>':'');
   if(S.vista==='chat'){ h+='<button class="tab" onclick="refrescar()">↻</button></div><main>'+pintaChat()+'</main>'+
     '<div class="envio"><label>📷<input type="file" id="gFoto" accept="image/*" style="display:none" onchange="enviarChat()"></label>'+
     '<textarea id="gTxt" rows="1" placeholder="Escribe un mensaje para todo el equipo" oninput="S.borr=this.value"></textarea><button id="gOk" onclick="enviarChat()">➤</button></div>';
     app.innerHTML=h; const ta=document.getElementById('gTxt'); ta.value=S.borr||'';
     marcaVistos(); window.scrollTo(0,document.body.scrollHeight); return; }
+  if(S.vista==='cxc'){ h+='<button class="tab" onclick="cargarFac(true)">↻</button></div><main>'+pintaCxC()+'</main>'; app.innerHTML=h; return; }
   if(S.vista==='sat'){ h+='<button class="tab" onclick="verSat()">↻</button></div><main>'+pintaSat()+'</main>'; app.innerHTML=h; return; }
   if(S.vista==='todas') h+='<select onchange="S.persona=this.value;pintar()"><option value="">Todos</option>'+S.nombres.map(n=>'<option'+(n===S.persona?' selected':'')+'>'+esc(n)+'</option>').join('')+'</select>';
   h+='<label style="font-size:13px;display:flex;align-items:center;gap:4px;width:auto"><input type="checkbox" style="width:auto" '+(S.ocultar?'checked':'')+' onchange="S.ocultar=this.checked;pintar()">Ocultar terminadas</label>';
@@ -434,6 +449,7 @@ function tarjeta(t){
   if(S.u.admin) h+='<button class="ob" onclick="editar(\''+t.id+'\')">✎</button>';
   h+='</div>';
   h+=filaOT(t);
+  h+=filaFac(t);
   if(t.est==='Terminado' && puede(t)){
     if(!t.sat) h+='<button class="satb preg" onclick="satPregunta(\''+t.id+'\')">⭐ ¿El cliente quedó 100% satisfecho? Contesta aquí</button>';
     else if(t.sat==='no') h+='<button class="satb" onclick="satOK(\''+t.id+'\')">✅ Cliente 100% Satisfecho</button>';
@@ -715,6 +731,169 @@ async function enviarWA(){
     document.getElementById('wLink').innerHTML='<div class="nota" style="margin-top:10px">✅ '+esc(r.msg)+'</div><a class="btn ter" style="display:block;text-align:center;margin-top:8px;text-decoration:none;padding:13px" target="_blank" rel="noopener" href="'+esc(r.url)+'" onclick="setTimeout(()=>cerrar(\'mWA\'),600)">📲 Abrir WhatsApp y enviar</a>';
   }catch(e){ toast(e.offline?'Sin internet: para mandar por WhatsApp primero se registra el envío. Inténtalo cuando tengas señal.':e.message,6000); b.disabled=false; b.textContent='Continuar'; }
 }
+// ---------- Notas de venta, prefacturas y cobranza (solo Loriel, Esmeralda y Guillermo) ----------
+const FACT_USR=['Loriel','Esmeralda','Guillermo'];
+function puedeFac(){ return !!(S.u && S.u.admin && FACT_USR.indexOf(S.u.n)>=0); }
+function mx(n){ return '$'+Number(n||0).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function r2(n){ return Math.round(Number(n||0)*100)/100; }
+function sumaDias(f,n){ const d=new Date(f+'T12:00:00'); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
+function fdx(f){ return f? f.slice(8,10)+'/'+f.slice(5,7)+'/'+f.slice(0,4):''; }
+function esAdminTarea(t){ return /^Generar orden de trabajo de /.test(t.tarea) || t.resp==='Loriel' || /^(Administración|Interno - Administración)$/i.test(t.cliente||''); }
+async function cargarFac(forzar){
+  if(!puedeFac()) return;
+  if(!forzar && S.facT && Date.now()-S.facT<60000) return;
+  S.facT=Date.now();
+  try{ S.fac=await call('factDatos',S.a); pintar(); }catch(e){ if(!e.offline) console.warn(e.message); }
+}
+function filaFac(t){
+  if(!puedeFac() || !S.fac || esAdminTarea(t)) return '';
+  const ds=(S.fac.porTarea||{})[t.id]||[];
+  let h='<div class="facw">';
+  ds.forEach(d=>{ h+='<button class="fcb'+(d.vencido>0?' venc':d.saldo<=0.009?' pag':'')+'" onclick="verDoc(\''+d.folio+'\')">🧾 '+esc(d.folio)+' · '+mx(d.total)+
+    (d.saldo>0.009?' · saldo '+mx(d.saldo):' · pagada')+(/timbrar/.test(d.est)?' · por timbrar':'')+'</button>'; });
+  h+='<button class="fcn" onclick="abrirFac(\''+t.id+'\')">🧾 '+(ds.length?'Otra nota o factura':'Nota de venta o factura')+' <small>solo dirección</small></button></div>';
+  return h;
+}
+// ----- Formulario -----
+const REGIMENES=['601 General de Ley Personas Morales','603 Personas Morales con Fines no Lucrativos','605 Sueldos y Salarios','606 Arrendamiento','612 Personas Físicas con Actividades Empresariales y Profesionales','616 Sin obligaciones fiscales','621 Incorporación Fiscal','625 Plataformas Tecnológicas','626 Régimen Simplificado de Confianza'];
+const USOS=['G01 Adquisición de mercancías','G03 Gastos en general','I08 Otra maquinaria y equipo','S01 Sin efectos fiscales','CP01 Pagos'];
+const CONDS={contado:'Contado (un solo pago)','6040':'60% anticipo y 40% contra entrega','5050':'50% anticipo y 50% contra entrega',cred15:'Crédito 15 días',cred30:'Crédito 30 días',parc:'Parcialidades mensuales',otra:'Otra (fechas a mano)'};
+function abrirFac(id){
+  const t=S.tareas.find(x=>x.id===id)||{};
+  const c=((S.fac&&S.fac.clientes)||[]).find(x=>x.cliente.toLowerCase()===(t.cliente||'').toLowerCase())||{};
+  S.ff={tarea:id, entrega:(t.fecha&&t.fecha>=S.hoy)?t.fecha:sumaDias(S.hoy,7), tipo:'', cliente:t.cliente||'', rfc:c.rfc||'', razon:c.razon||'', regimen:c.regimen||'', cp:c.cp||'', uso:c.uso||'G03', correo:c.correo||'',
+    conceptos:[{cant:1,unidad:'H87 Pieza',clave:'82121500',desc:(t.tarea||'').toUpperCase(),pu:''}], cond:'6040', nParc:3, forma:'03', pagos:[], obs:'', manual:false};
+  pintaFac(); abrir('mFac');
+}
+function ffTotales(){ const sub=r2(S.ff.conceptos.reduce((s,c)=>s+(Number(c.cant)||0)*(Number(c.pu)||0),0)); const iva=r2(sub*0.16); return {sub:sub,iva:iva,tot:r2(sub+iva)}; }
+function ffCalendario(){
+  const T=ffTotales().tot, f=S.ff, hoy=S.hoy;
+  if(f.cond==='otra' || f.manual) return;
+  const p=[];
+  if(f.cond==='contado') p.push({fecha:hoy,monto:T});
+  else if(f.cond==='6040'||f.cond==='5050'){ const a=r2(T*(f.cond==='6040'?0.6:0.5)); p.push({fecha:hoy,monto:a},{fecha:f.entrega,monto:r2(T-a)}); }
+  else if(f.cond==='cred15') p.push({fecha:sumaDias(hoy,15),monto:T});
+  else if(f.cond==='cred30') p.push({fecha:sumaDias(hoy,30),monto:T});
+  else if(f.cond==='parc'){ const n=Math.max(2,Math.min(24,Number(f.nParc)||3)), m=r2(T/n); for(let i=1;i<=n;i++) p.push({fecha:sumaDias(hoy,30*i),monto:i<n?m:r2(T-m*(n-1))}); }
+  f.pagos=p;
+}
+function pintaFac(){
+  const f=S.ff, cs=(S.fac&&S.fac.clientes)||[];
+  let h='<h3>🧾 Nota de venta o factura</h3><div class="nota">'+esc(f.tarea)+' · solo Loriel, Esmeralda y Guillermo ven esto</div>';
+  h+='<label>¿Qué se genera?</label><div class="row"><button class="btn tipo'+(f.tipo==='NV'?' on':'')+'" onclick="ffTipo(\'NV\')">Nota de venta</button><button class="btn tipo'+(f.tipo==='PF'?' on':'')+'" onclick="ffTipo(\'PF\')">Factura (prefactura para Aspel)</button></div>';
+  if(!f.tipo){ h+='<div class="nota" style="margin-top:12px">Elige una opción para continuar.</div><div class="row" style="margin-top:14px"><button class="btn" onclick="cerrar(\'mFac\')">Cancelar</button></div>'; document.getElementById('fV').innerHTML=h; return; }
+  h+='<label>Cliente</label><input id="fCli" list="fCliL" value="'+esc(f.cliente)+'" onchange="ffCliente(this.value)" oninput="S.ff.cliente=this.value"><datalist id="fCliL">'+cs.map(c=>'<option value="'+esc(c.cliente)+'">').join('')+'</datalist>';
+  if(f.tipo==='PF'){
+    h+='<div class="fis"><div class="row"><div><label>RFC</label><input value="'+esc(f.rfc)+'" maxlength="13" style="text-transform:uppercase" oninput="S.ff.rfc=this.value.toUpperCase().trim()"></div><div><label>C.P. fiscal</label><input value="'+esc(f.cp)+'" inputmode="numeric" maxlength="5" oninput="S.ff.cp=this.value.trim()"></div></div>'+
+      '<label>Razón social (como en su constancia, sin "SA de CV" si así viene)</label><input value="'+esc(f.razon)+'" oninput="S.ff.razon=this.value"><label>Régimen fiscal</label><select onchange="S.ff.regimen=this.value"><option value="">Elige…</option>'+
+      REGIMENES.map(r=>'<option'+(r===f.regimen?' selected':'')+'>'+r+'</option>').join('')+'</select><label>Uso del CFDI</label><select onchange="S.ff.uso=this.value.slice(0,3).trim()">'+
+      USOS.map(u=>'<option'+(u.indexOf(f.uso+' ')===0?' selected':'')+'>'+u+'</option>').join('')+'</select></div>';
+  }
+  h+='<label>Conceptos (precios unitarios antes de IVA)</label><div id="fCon">'+pintaConceptos()+'</div><button class="btn" style="margin-top:6px" onclick="S.ff.conceptos.push({cant:1,unidad:\'H87 Pieza\',clave:\'82121500\',desc:\'\',pu:\'\'});document.getElementById(\'fCon\').innerHTML=pintaConceptos()">＋ Concepto</button>';
+  h+='<div id="fTot" class="ftot"></div>';
+  h+='<label>Condiciones de pago</label><select onchange="S.ff.cond=this.value;S.ff.manual=false;ffRecalc(true);document.getElementById(\'fParc\').style.display=this.value===\'parc\'?\'block\':\'none\';document.getElementById(\'fEnt\').style.display=/^(6040|5050)$/.test(this.value)?\'block\':\'none\'">'+
+    Object.keys(CONDS).map(k=>'<option value="'+k+'"'+(k===f.cond?' selected':'')+'>'+CONDS[k]+'</option>').join('')+'</select>';
+  h+='<div id="fEnt" style="display:'+(/^(6040|5050)$/.test(f.cond)?'block':'none')+'"><label>Fecha de entrega (segundo pago)</label><input type="date" value="'+f.entrega+'" onchange="S.ff.entrega=this.value;S.ff.manual=false;ffRecalc(true)"></div>';
+  h+='<div id="fParc" style="display:'+(f.cond==='parc'?'block':'none')+'"><label>Número de pagos mensuales</label><input type="number" min="2" max="24" value="'+f.nParc+'" oninput="S.ff.nParc=this.value;S.ff.manual=false;ffRecalc(true)"></div>';
+  h+='<label>Forma de pago</label><select onchange="S.ff.forma=this.value">'+[['03','Transferencia'],['01','Efectivo'],['04','Tarjeta de crédito'],['28','Tarjeta de débito'],['02','Cheque']].map(x=>'<option value="'+x[0]+'"'+(x[0]===f.forma?' selected':'')+'>'+x[0]+' '+x[1]+'</option>').join('')+'</select>';
+  h+='<label>Calendario de pagos</label><div id="fCal"></div>';
+  h+='<label>Observaciones (opcional)</label><input value="'+esc(f.obs)+'" oninput="S.ff.obs=this.value" placeholder="Ej. OC del cliente 4512, entrega en tienda">';
+  h+='<div class="row" style="margin-top:14px"><button class="btn" onclick="cerrar(\'mFac\')">Cancelar</button><button class="btn pri" id="fOk" onclick="guardarFac()">Generar '+(f.tipo==='NV'?'nota de venta':'prefactura')+'</button></div>';
+  document.getElementById('fV').innerHTML=h; ffRecalc(true);
+}
+function pintaConceptos(){
+  return S.ff.conceptos.map((c,i)=>'<div class="fcon"><textarea rows="2" placeholder="SUMINISTRO, IMPRESIÓN…" oninput="S.ff.conceptos['+i+'].desc=this.value">'+esc(c.desc)+'</textarea>'+
+    '<div class="row"><input type="number" step="any" min="0" value="'+esc(c.cant)+'" title="Cantidad" placeholder="Cant." oninput="S.ff.conceptos['+i+'].cant=this.value;ffRecalc()">'+
+    '<select title="Unidad" onchange="S.ff.conceptos['+i+'].unidad=this.value">'+['H87 Pieza','E48 Unidad de servicio','MTK Metro cuadrado','MTR Metro','XKI Kit','ACT Actividad'].map(u=>'<option'+(u===c.unidad?' selected':'')+'>'+u+'</option>').join('')+'</select>'+
+    '<input type="number" step="any" min="0" value="'+esc(c.pu)+'" placeholder="P. unitario" oninput="S.ff.conceptos['+i+'].pu=this.value;ffRecalc()">'+
+    (S.ff.conceptos.length>1?'<button class="btn" style="flex:none" onclick="S.ff.conceptos.splice('+i+',1);document.getElementById(\'fCon\').innerHTML=pintaConceptos();ffRecalc()">✕</button>':'')+'</div>'+
+    (S.ff.tipo==='PF'?'<input value="'+esc(c.clave)+'" placeholder="Clave SAT (82121500 impresión)" title="Clave de producto o servicio SAT" oninput="S.ff.conceptos['+i+'].clave=this.value.trim()" style="margin-top:4px">':'')+'</div>').join('');
+}
+function ffRecalc(regen){
+  const T=ffTotales();
+  const e=document.getElementById('fTot'); if(e) e.innerHTML='Subtotal '+mx(T.sub)+' · IVA 16% '+mx(T.iva)+' · <b>Total '+mx(T.tot)+'</b>';
+  if(regen || !S.ff.manual){ ffCalendario(); pintaCal(); } else pintaSuma();
+}
+function pintaCal(){
+  const f=S.ff, el=document.getElementById('fCal'); if(!el) return;
+  el.innerHTML=f.pagos.map((p,i)=>'<div class="row fcal"><span style="flex:none;width:22px;padding-top:10px">'+(i+1)+'</span><input type="date" value="'+p.fecha+'" onchange="S.ff.pagos['+i+'].fecha=this.value;S.ff.manual=true">'+
+    '<input type="number" step="0.01" min="0" value="'+p.monto+'" oninput="S.ff.pagos['+i+'].monto=Number(this.value);S.ff.manual=true;pintaSuma()">'+
+    '<button class="btn" style="flex:none" onclick="S.ff.pagos.splice('+i+',1);S.ff.manual=true;pintaCal()">✕</button></div>').join('')+
+    '<button class="btn" style="margin-top:4px" onclick="S.ff.pagos.push({fecha:S.hoy,monto:0});S.ff.manual=true;pintaCal()">＋ Fecha de pago</button><div id="fSum" class="nota"></div>';
+  pintaSuma();
+}
+function pintaSuma(){
+  const s=r2(S.ff.pagos.reduce((a,p)=>a+(Number(p.monto)||0),0)), T=ffTotales().tot, e=document.getElementById('fSum'); if(!e) return;
+  const ok=Math.abs(s-T)<=0.05;
+  e.innerHTML=ok?'✅ El calendario cuadra con el total':'⚠ El calendario suma '+mx(s)+' y el total es '+mx(T)+(T>s?' (faltan '+mx(T-s)+')':' (sobran '+mx(s-T)+')');
+  e.style.color=ok?'#1e8e3e':'#d93025';
+}
+function ffTipo(t){ S.ff.tipo=t; pintaFac(); }
+function ffCliente(v){
+  S.ff.cliente=v; const c=((S.fac&&S.fac.clientes)||[]).find(x=>x.cliente.toLowerCase()===v.trim().toLowerCase());
+  if(c){ Object.assign(S.ff,{rfc:c.rfc,razon:c.razon,regimen:c.regimen,cp:c.cp,uso:c.uso||'G03',correo:c.correo}); if(S.ff.tipo==='PF') pintaFac(); }
+}
+async function guardarFac(){
+  const f=S.ff, b=document.getElementById('fOk');
+  const p={tarea:f.tarea,tipo:f.tipo,cliente:f.cliente.trim(),rfc:f.rfc,razon:f.razon,regimen:f.regimen,cp:f.cp,uso:f.uso,correo:f.correo,
+    conceptos:f.conceptos.map(c=>({cant:Number(c.cant),unidad:c.unidad,clave:c.clave,desc:String(c.desc||'').trim(),pu:Number(c.pu)})),
+    cond:f.cond==='parc'?f.pagos.length+' pagos mensuales':f.cond==='otra'||f.manual?'Según calendario: '+f.pagos.map(x=>fdx(x.fecha)+' '+mx(x.monto)).join(', '):CONDS[f.cond],
+    forma:f.forma,pagos:f.pagos.filter(x=>x.fecha&&Number(x.monto)>0),obs:f.obs};
+  b.disabled=true; b.textContent='Generando…';
+  try{ const r=await call('factGuardar',S.a,p);
+    document.getElementById('fV').innerHTML='<h3>✅ '+esc(r.folio)+' lista</h3><div class="nota" style="font-size:15px;color:var(--ink)">'+esc(r.msg)+'</div>'+
+      '<a class="btn pri" style="display:block;text-align:center;text-decoration:none;margin-top:14px" target="_blank" rel="noopener" href="'+esc(r.pdf)+'">📄 Abrir PDF</a>'+
+      '<button class="btn" style="width:100%;margin-top:8px" onclick="cerrar(\'mFac\')">Cerrar</button>';
+    await cargarFac(true);
+  }catch(e){ toast(e.message,7000); b.disabled=false; b.textContent='Generar '+(f.tipo==='NV'?'nota de venta':'prefactura'); }
+}
+// ----- Ficha de un documento: pagos, timbrado, cancelación -----
+function verDoc(folio){
+  const d=((S.fac&&S.fac.docs)||[]).find(x=>x.folio===folio); if(!d) return;
+  let h='<h3>🧾 '+esc(d.folio)+' · '+esc(d.tipo)+'</h3><div class="nota">'+esc(d.cliente)+(d.rfc?' · '+esc(d.rfc):'')+' · '+fdx(d.fecha)+(d.tarea?' · '+esc(d.tarea):'')+'</div>';
+  h+='<div class="ftot">Total <b>'+mx(d.total)+'</b> · Pagado '+mx(d.pagado)+' · <b style="color:'+(d.vencido>0?'#d93025':'inherit')+'">Saldo '+mx(d.saldo)+'</b></div>';
+  h+='<div class="nota">Estatus: <b>'+esc(d.est)+'</b>'+(d.aspel?' · Aspel/UUID: '+esc(d.aspel):'')+(d.metodo?' · '+esc(d.metodo):'')+' · '+esc(d.cond)+'</div>';
+  if(d.pdf) h+='<a class="btn-foto" target="_blank" rel="noopener" href="'+esc(d.pdf)+'">📄 Ver PDF</a>';
+  h+='<label>Calendario de pagos</label>';
+  d.pagos.forEach(p=>{
+    const falta=r2(p.monto-(p.pagado||0));
+    h+='<div class="fpago '+(p.est==='Pagado'?'pag':p.est==='Vencido'?'venc':'')+'"><div><b>'+p.n+'.</b> '+fdx(p.fecha)+' · '+mx(p.monto)+' · '+esc(p.est)+(p.pagado?' ('+mx(p.pagado)+' el '+fdx(p.fpago)+')':'')+'</div>'+
+      (p.est!=='Pagado'&&d.est!=='Cancelada'?'<div class="row" style="margin-top:6px"><input type="number" step="0.01" id="pm'+p.n+'" value="'+falta+'"><input type="date" id="pf'+p.n+'" value="'+S.hoy+'"></div>'+
+      '<div class="row" style="margin-top:6px"><select id="pw'+p.n+'"><option>03 Transferencia</option><option>01 Efectivo</option><option>04 Tarjeta de crédito</option><option>28 Tarjeta de débito</option><option>02 Cheque</option></select>'+
+      '<input id="pr'+p.n+'" placeholder="Referencia / banco"></div><button class="btn ter" style="width:100%;margin-top:6px" onclick="regPago(\''+d.folio+'\','+p.n+')">💰 Registrar pago</button>':'')+'</div>';
+  });
+  if(d.tipo==='Prefactura' && /timbrar/.test(d.est)) h+='<label>¿Ya se timbró en Aspel?</label><div class="row"><input id="dAs" placeholder="Folio Aspel o UUID"><button class="btn ter" style="flex:none" onclick="docEst(\''+d.folio+'\',\'Timbrada\')">Marcar timbrada</button></div>';
+  h+='<div class="row" style="margin-top:14px">'+(d.est!=='Cancelada'?'<button class="btn det" onclick="docEst(\''+d.folio+'\',\'Cancelada\')">Cancelar documento</button>':'')+'<button class="btn" onclick="cerrar(\'mFac\')">Cerrar</button></div>';
+  document.getElementById('fV').innerHTML=h; abrir('mFac');
+}
+async function regPago(folio,n){
+  const m=document.getElementById('pm'+n).value, f=document.getElementById('pf'+n).value, w=document.getElementById('pw'+n).value, r=document.getElementById('pr'+n).value;
+  try{ const x=await call('factPago',S.a,folio,n,Number(m),f,w,r); toast(x.msg,4000); await cargarFac(true); verDoc(folio); }catch(e){ toast(e.message,6000); }
+}
+async function docEst(folio,est){
+  let as='';
+  if(est==='Timbrada'){ as=(document.getElementById('dAs')||{}).value||''; if(!as.trim()){ toast('Escribe el folio de Aspel o el UUID'); return; } }
+  if(est==='Cancelada' && !confirm('¿Cancelar '+folio+'? Su saldo deja de contar en cuentas por cobrar.')) return;
+  try{ const x=await call('factEstatus',S.a,folio,est,as); toast(x.msg,4000); await cargarFac(true); verDoc(folio); }catch(e){ toast(e.message,6000); }
+}
+// ----- Pestaña Cobranza -----
+function verCxC(){ S.vista='cxc'; pintar(); cargarFac(true); }
+function pintaCxC(){
+  if(!S.fac) return '<div class="empty">Cargando cuentas por cobrar…</div>';
+  const R=S.fac.resumen||[], tot=R.reduce((a,c)=>({s:a.s+c.saldo,v:a.v+c.vencido}),{s:0,v:0});
+  const filtro=S.cxcF||'saldo';
+  let h='<div class="card"><div class="cli">Cuentas por cobrar · todos los clientes</div><div class="tar">Saldo <b>'+mx(tot.s)+'</b> · <span style="color:#d93025">Vencido '+mx(tot.v)+'</span></div>'+
+    '<div class="acts">'+(S.fac.excel?'<a class="btn-foto" target="_blank" rel="noopener" href="'+esc(S.fac.excel)+'">📊 Excel</a>':'')+'<a class="btn-foto" target="_blank" rel="noopener" href="'+esc(S.fac.hoja)+'">🗂 Hoja de Google</a></div></div>';
+  if(R.length){ h+='<div class="card"><table class="ftab"><tr><th>Cliente</th><th>Saldo</th><th>Vencido</th><th>Próximo</th></tr>'+
+    R.map(c=>'<tr><td>'+esc(c.cliente)+'</td><td>'+mx(c.saldo)+'</td><td'+(c.vencido>0?' style="color:#d93025;font-weight:700"':'')+'>'+mx(c.vencido)+'</td><td>'+(c.prox?fdx(c.prox).slice(0,5)+' '+mx(c.proxMonto):'')+'</td></tr>').join('')+'</table></div>'; }
+  h+='<div class="bar" style="background:none;border:none;padding:4px 0">'+[['saldo','Con saldo'],['timbrar','Por timbrar'],['todas','Todas']].map(x=>'<button class="tab'+(filtro===x[0]?' on':'')+'" onclick="S.cxcF=\''+x[0]+'\';pintar()">'+x[1]+'</button>').join('')+'</div>';
+  const ds=(S.fac.docs||[]).filter(d=>filtro==='todas'||(filtro==='timbrar'?/timbrar/.test(d.est):d.saldo>0.009));
+  if(!ds.length) h+='<div class="empty">Nada por aquí.</div>';
+  ds.forEach(d=>{ h+='<div class="card '+(d.vencido>0?'r':d.saldo<=0.009?'ok':'v')+'" onclick="verDoc(\''+d.folio+'\')" style="cursor:pointer"><div class="cli">'+esc(d.cliente)+' · '+esc(d.folio)+'</div>'+
+    '<div class="tar">'+mx(d.total)+' · saldo <b>'+mx(d.saldo)+'</b>'+(d.vencido>0?' · <span style="color:#d93025">vencido '+mx(d.vencido)+'</span>':'')+'</div><div class="meta"><span class="tag">'+esc(d.tipo)+'</span><span class="tag">'+esc(d.est)+'</span><span class="tag">'+fdx(d.fecha)+'</span>'+(d.tarea?'<span class="tag">'+esc(d.tarea)+'</span>':'')+'</div></div>'; });
+  return h;
+}
+
 // ---------- Satisfacción del cliente al terminar ----------
 async function callOCola(fn,args,id){ try{ return await call.apply(null,[fn].concat(args)); }catch(e){ if(!e.offline) throw e; await guardaSinSenal(fn,args,id,null); return {queued:true}; } }
 function satPregunta(id,grac){
