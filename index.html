@@ -160,6 +160,10 @@ body.mini .mrow .who{color:var(--mut);width:70px;white-space:nowrap;overflow:hid
 .fcon .row input,.fcon .row select,.fcal input{padding:8px 6px;font-size:14px;min-width:0}
 .ftot{background:var(--bg);border-radius:9px;padding:10px;margin-top:10px;font-size:14px}
 .fpago{border:1px solid var(--line);border-radius:9px;padding:8px;margin-bottom:6px;font-size:14px}.fpago.pag{background:#e6f4ea}.fpago.venc{background:#fde8e6}
+.fcn.urge{border:2px solid #d93025;background:#fde8e6;color:#b42318;animation:fpulse 1.6s ease-in-out infinite}
+@keyframes fpulse{50%{box-shadow:0 0 0 4px #d9302533}}
+.fban{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:#d93025;color:#fff;border-radius:12px;padding:12px 14px;margin-bottom:10px;cursor:pointer;font-size:14.5px}
+.fban span{margin-left:auto;background:#fff;color:#b42318;border-radius:20px;padding:5px 12px;font-weight:700;font-size:13px}
 .ftab{width:100%;border-collapse:collapse;font-size:13.5px}.ftab th{text-align:left;color:var(--mut);font-weight:600;border-bottom:1px solid var(--line);padding:4px}.ftab td{padding:6px 4px;border-bottom:1px solid var(--line)}
 </style>
 </head>
@@ -395,7 +399,7 @@ function pintar(){
   if(S.vista==='sat'){ h+='<button class="tab" onclick="verSat()">↻</button></div><main>'+pintaSat()+'</main>'; app.innerHTML=h; return; }
   if(S.vista==='todas') h+='<select onchange="S.persona=this.value;pintar()"><option value="">Todos</option>'+S.nombres.map(n=>'<option'+(n===S.persona?' selected':'')+'>'+esc(n)+'</option>').join('')+'</select>';
   h+='<label style="font-size:13px;display:flex;align-items:center;gap:4px;width:auto"><input type="checkbox" style="width:auto" '+(S.ocultar?'checked':'')+' onchange="S.ocultar=this.checked;pintar()">Ocultar terminadas</label>';
-  h+='<button class="tab" onclick="refrescar()">↻</button></div><main>';
+  h+='<button class="tab" onclick="refrescar()">↻</button></div><main>'+(MINI?'':bannerFac());
   (S.otPend||[]).forEach(v=>{
     h+='<div class="otreq">🚨 <b>'+esc(v.por)+'</b> pide la <b>orden de trabajo</b> de <b>'+esc(v.cliente)+' · '+esc(v.texto)+'</b> ('+esc(v.tarea)+', responsable '+esc(v.resp)+')'+
       '<div class="nota" style="color:#7a1f16">¿Quieres que Claude te la genere? Solo dale indicaciones.</div>'+
@@ -751,8 +755,26 @@ function filaFac(t){
   let h='<div class="facw">';
   ds.forEach(d=>{ h+='<button class="fcb'+(d.vencido>0?' venc':d.saldo<=0.009?' pag':'')+'" onclick="verDoc(\''+d.folio+'\')">🧾 '+esc(d.folio)+' · '+mx(d.total)+
     (d.saldo>0.009?' · saldo '+mx(d.saldo):' · pagada')+(/timbrar/.test(d.est)?' · por timbrar':'')+'</button>'; });
-  h+='<button class="fcn" onclick="abrirFac(\''+t.id+'\')">🧾 '+(ds.length?'Otra nota o factura':'Nota de venta o factura')+' <small>solo dirección</small></button></div>';
+  const urge=t.est==='Terminado' && !ds.length;
+  h+='<button class="fcn'+(urge?' urge':'')+'" onclick="abrirFac(\''+t.id+'\')">'+(urge?'⚠ Terminada SIN FACTURAR · Facturar ahora':'🧾 '+(ds.length?'Otra nota o factura':'Nota de venta o factura'))+' <small>solo dirección</small></button></div>';
   return h;
+}
+// Franja roja: órdenes terminadas sin nota ni factura (no se ocultan hasta facturarlas)
+function bannerFac(){
+  if(!puedeFac() || !S.fac || !(S.fac.sinFacturar||[]).length) return '';
+  const s=S.fac.sinFacturar, max=s.reduce((m,t)=>Math.max(m,t.dias||0),0);
+  return '<div class="fban" onclick="S.cxcF=\'sinfac\';verCxC()">🧾 <b>'+s.length+' '+(s.length>1?'órdenes':'orden')+' terminada'+(s.length>1?'s':'')+' SIN FACTURAR</b>'+
+    (max?' · la más antigua lleva '+max+' día'+(max>1?'s':''):'')+'<span>Facturar ahora ›</span></div>';
+}
+function filaSinFac(t){
+  return '<div class="card r"><div class="cli">'+esc(t.cliente||'Sin cliente')+' · '+esc(t.id)+'</div><div class="tar">'+esc(t.tarea)+'</div>'+
+    '<div class="meta"><span class="tag">'+esc(t.resp)+'</span><span class="tag urg">'+(t.dias?t.dias+' día'+(t.dias>1?'s':'')+' sin facturar':'Terminó hoy')+'</span></div>'+
+    '<button class="fcn urge" style="width:100%;margin-top:8px" onclick="abrirFacSF(\''+t.id+'\')">⚠ Facturar ahora</button></div>';
+}
+// Las terminadas pueden no venir en S.tareas si son viejas: se arma la tarea con lo que trae S.fac
+function abrirFacSF(id){
+  if(!S.tareas.some(x=>x.id===id)){ const t=(S.fac.sinFacturar||[]).find(x=>x.id===id); if(t) S.tareas.push({id:t.id,cliente:t.cliente,tarea:t.tarea,resp:t.resp,fecha:S.hoy,est:'Terminado',prio:'Normal'}); }
+  abrirFac(id);
 }
 // ----- Formulario -----
 const REGIMENES=['601 General de Ley Personas Morales','603 Personas Morales con Fines no Lucrativos','605 Sueldos y Salarios','606 Arrendamiento','612 Personas Físicas con Actividades Empresariales y Profesionales','616 Sin obligaciones fiscales','621 Incorporación Fiscal','625 Plataformas Tecnológicas','626 Régimen Simplificado de Confianza'];
@@ -881,12 +903,14 @@ function verCxC(){ S.vista='cxc'; pintar(); cargarFac(true); }
 function pintaCxC(){
   if(!S.fac) return '<div class="empty">Cargando cuentas por cobrar…</div>';
   const R=S.fac.resumen||[], tot=R.reduce((a,c)=>({s:a.s+c.saldo,v:a.v+c.vencido}),{s:0,v:0});
-  const filtro=S.cxcF||'saldo';
-  let h='<div class="card"><div class="cli">Cuentas por cobrar · todos los clientes</div><div class="tar">Saldo <b>'+mx(tot.s)+'</b> · <span style="color:#d93025">Vencido '+mx(tot.v)+'</span></div>'+
+  const SF=S.fac.sinFacturar||[];
+  const filtro=S.cxcF||(SF.length?'sinfac':'saldo');
+  let h=bannerFac()+'<div class="card"><div class="cli">Cuentas por cobrar · todos los clientes</div><div class="tar">Saldo <b>'+mx(tot.s)+'</b> · <span style="color:#d93025">Vencido '+mx(tot.v)+'</span></div>'+
     '<div class="acts">'+(S.fac.excel?'<a class="btn-foto" target="_blank" rel="noopener" href="'+esc(S.fac.excel)+'">📊 Excel</a>':'')+'<a class="btn-foto" target="_blank" rel="noopener" href="'+esc(S.fac.hoja)+'">🗂 Hoja de Google</a></div></div>';
   if(R.length){ h+='<div class="card"><table class="ftab"><tr><th>Cliente</th><th>Saldo</th><th>Vencido</th><th>Próximo</th></tr>'+
     R.map(c=>'<tr><td>'+esc(c.cliente)+'</td><td>'+mx(c.saldo)+'</td><td'+(c.vencido>0?' style="color:#d93025;font-weight:700"':'')+'>'+mx(c.vencido)+'</td><td>'+(c.prox?fdx(c.prox).slice(0,5)+' '+mx(c.proxMonto):'')+'</td></tr>').join('')+'</table></div>'; }
-  h+='<div class="bar" style="background:none;border:none;padding:4px 0">'+[['saldo','Con saldo'],['timbrar','Por timbrar'],['todas','Todas']].map(x=>'<button class="tab'+(filtro===x[0]?' on':'')+'" onclick="S.cxcF=\''+x[0]+'\';pintar()">'+x[1]+'</button>').join('')+'</div>';
+  h+='<div class="bar" style="background:none;border:none;padding:4px 0">'+[['sinfac','Sin facturar ('+SF.length+')'],['saldo','Con saldo'],['timbrar','Por timbrar'],['todas','Todas']].map(x=>'<button class="tab'+(filtro===x[0]?' on':'')+'" onclick="S.cxcF=\''+x[0]+'\';pintar()">'+x[1]+'</button>').join('')+'</div>';
+  if(filtro==='sinfac'){ if(!SF.length) h+='<div class="empty">✅ Todo lo terminado ya tiene nota o factura.</div>'; SF.forEach(t=>{ h+=filaSinFac(t); }); return h; }
   const ds=(S.fac.docs||[]).filter(d=>filtro==='todas'||(filtro==='timbrar'?/timbrar/.test(d.est):d.saldo>0.009));
   if(!ds.length) h+='<div class="empty">Nada por aquí.</div>';
   ds.forEach(d=>{ h+='<div class="card '+(d.vencido>0?'r':d.saldo<=0.009?'ok':'v')+'" onclick="verDoc(\''+d.folio+'\')" style="cursor:pointer"><div class="cli">'+esc(d.cliente)+' · '+esc(d.folio)+'</div>'+
